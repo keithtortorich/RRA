@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rra-mvp"
+version = "0.1.0"
+description = "Thin commercial layer over Zubair's worker repos."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.5", "mypy>=1.8"]
+
+[project.scripts]
+revenue-scan    = "rra_mvp.cli:scan_cmd"
+revenue-audit   = "rra_mvp.cli:audit_cmd"
+revenue-propose = "rra_mvp.cli:propose_cmd"
+
+[tool.setuptools]
+packages = ["rra_mvp", "rra_mvp.verticals"]
+
+[tool.setuptools.package-data]
+"rra_mvp.verticals" = ["*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+python_files = ["test_*.py"]
