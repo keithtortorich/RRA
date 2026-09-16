@@ -41,7 +41,7 @@ def _write_report(path: Path, url: str, results: dict) -> None:
     parts.append("# Revenue Leak Report\n")
     parts.append(f"**Target:** {url}  ")
     parts.append(f"**Date:** {date.today().isoformat()}  ")
-    parts.append(f"**Status:** draft — operator to fill dollar figures\n")
+    parts.append("**Status:** draft — operator to fill dollar figures\n")
     parts.append("---\n")
     parts.append("## Estimated Monthly Opportunity\n")
     parts.append("> **$______/mo** total estimated recoverable revenue\n")

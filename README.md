@@ -23,7 +23,27 @@ Until five real proposals answer that question, more platform work is out of sco
 - [OPERATOR.md](OPERATOR.md): setup, commands, inputs, and outputs.
 - [docs/MVP.md](docs/MVP.md): complete stripped-MVP implementation reference.
 - [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md): five-prospect validation plan.
+- [docs/SALES_PLAYBOOK.md](docs/SALES_PLAYBOOK.md): launch-stage sales operating playbook.
 - [pipeline.md](pipeline.md): prospect tracking template.
+- [SALES TOOL.html](SALES%20TOOL.html): the sales tool — calculator, pipeline, pitch
+  generator, objection handling, activity tracker, and launch protocol.
+
+## Sales Tool — rendered webpage
+
+`SALES TOOL.html` is a single self-contained page (no build step, no server, no
+dependencies). `docs/index.html` is an identical mirror of it, kept there so
+GitHub Pages can serve it as a normal URL instead of a raw file.
+
+One-time setup (repo owner, in the GitHub UI): **Settings → Pages → Build and
+deployment → Source: "Deploy from a branch" → Branch: `main`, folder: `/docs`
+→ Save.** After that, every push to `main` republishes automatically at:
+
+```
+https://keithtortorich.github.io/RRA/
+```
+
+If `SALES TOOL.html` is edited, copy it over `docs/index.html` again
+(`cp "SALES TOOL.html" docs/index.html`) so the published page stays in sync.
 
 ## Scope
 

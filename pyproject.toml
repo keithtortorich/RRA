@@ -20,7 +20,10 @@ revenue-audit   = "rra_mvp.cli:audit_cmd"
 revenue-propose = "rra_mvp.cli:propose_cmd"
 
 [tool.setuptools]
-packages = ["rra_mvp", "rra_mvp.verticals"]
+packages = [
+    "rra_mvp", "rra_mvp.verticals",
+    "rra", "rra.core", "rra.verticals", "rra.verticals.hvac",
+]
 
 [tool.setuptools.package-data]
 "rra_mvp.verticals" = ["*.md"]
