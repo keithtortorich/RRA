@@ -2,6 +2,8 @@
 
 RRA is a revenue-recovery system for owner-operated home-service businesses. The MVP finds one credible revenue leak, quantifies it in dollars, produces a guarded client-safe proposal, and tests whether the owner will pay to fix it.
 
+The Sales Cockpit (`SALES TOOL.html`) is the founder's operator tool: five-prospect pipeline, evidence-driven revenue calculator, outreach and $997 offer generation, objection handling, Call Mode, and activity tracking — see below.
+
 ## The MVP question
 
 > Can RRA reliably identify a credible, evidence-backed revenue opportunity that a business owner will pay us to fix?
@@ -25,14 +27,19 @@ Until five real proposals answer that question, more platform work is out of sco
 - [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md): five-prospect validation plan.
 - [docs/SALES_PLAYBOOK.md](docs/SALES_PLAYBOOK.md): launch-stage sales operating playbook.
 - [pipeline.md](pipeline.md): prospect tracking template.
-- [SALES TOOL.html](SALES%20TOOL.html): the sales tool — calculator, pipeline, pitch
-  generator, objection handling, activity tracker, and launch protocol.
+- [SALES TOOL.html](SALES%20TOOL.html): the sales cockpit — five-prospect board,
+  revenue calculator, evidence, outreach, $997 offer builder, Call Mode,
+  objections, activity tracker, notes, and launch scoreboard.
 
 ## Sales Tool — rendered webpage
 
-`SALES TOOL.html` is a single self-contained page (no build step, no server, no
-dependencies). `docs/index.html` is an identical mirror of it, kept there so
-GitHub Pages can serve it as a normal URL instead of a raw file.
+`docs/index.html` is the single canonical source (self-contained, no build
+step, no server, no dependencies — vanilla HTML/CSS/JS, all state in
+`localStorage`). `SALES TOOL.html` at the repo root is a **git symlink** to
+`docs/index.html`, not a copy — opening either file always shows the exact
+same bytes, so they cannot silently diverge. Edit `docs/index.html`; the root
+file follows automatically. (If your OS/tool doesn't preserve symlinks on
+checkout, re-run `ln -sf docs/index.html "SALES TOOL.html"`.)
 
 One-time setup (repo owner, in the GitHub UI): **Settings → Pages → Build and
 deployment → Source: "Deploy from a branch" → Branch: `main`, folder: `/docs`
@@ -41,9 +48,6 @@ deployment → Source: "Deploy from a branch" → Branch: `main`, folder: `/docs
 ```
 https://keithtortorich.github.io/RRA/
 ```
-
-If `SALES TOOL.html` is edited, copy it over `docs/index.html` again
-(`cp "SALES TOOL.html" docs/index.html`) so the published page stays in sync.
 
 ## Scope
 

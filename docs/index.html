@@ -2,32 +2,1285 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>RRA Sales Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>RRA Sales Cockpit</title>
 <style>
-:root{--ink:#111827;--ink2:#1f2937;--accent:#d97706;--paper:#f8fafc;--white:#fff;--muted:#64748b;--border:#e2e8f0;--green:#15803d;--red:#b91c1c;--blue:#1d4ed8;--r:10px}*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink)}.shell{display:flex;flex-direction:column;height:100dvh;max-width:600px;margin:auto;background:var(--white);box-shadow:0 0 35px #0002}.top{background:var(--ink);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}.logo{font-size:18px;font-weight:800;color:#fff}.logo b{color:#f59e0b}.label{font-size:10px;color:#fff8;text-transform:uppercase;letter-spacing:.1em}.tabs{display:flex;overflow-x:auto;background:var(--ink);scrollbar-width:none}.tab{min-width:70px;flex:1;padding:11px 8px;border:0;border-bottom:2px solid transparent;background:none;color:#fff7;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer}.tab.active{color:#fbbf24;border-bottom-color:#fbbf24}.panels{flex:1;overflow-y:auto}.panel{display:none;padding:16px}.panel.active{display:block}.card{border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;background:#fff}.head{font-size:15px;font-weight:800;margin-bottom:12px}.field{margin-bottom:10px}.field label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:8px;background:#f8fafc;font:inherit;color:var(--ink)}.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.meter{background:var(--ink);color:#fff;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px}.meter small{color:#fff8;text-transform:uppercase;letter-spacing:.08em}.big{font-size:46px;font-weight:900;color:#fbbf24;margin:5px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.stat{background:#f1f5f9;border:1px solid var(--border);border-radius:8px;padding:10px 5px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:9px;color:var(--muted);text-transform:uppercase}.btn{width:100%;border:0;border-radius:8px;padding:11px 14px;margin-top:8px;font:inherit;font-weight:700;cursor:pointer}.primary{background:var(--ink);color:#fff}.outline{background:#fff;color:var(--ink);border:1px solid var(--border)}.danger{background:#fff;color:var(--red);border:1px solid #fecaca}.pills{display:flex;flex-wrap:wrap;gap:6px}.pill{border:1px solid var(--border);background:#fff;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12px;cursor:pointer}.pill.win{background:var(--green);color:#fff}.pitchtypes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}.ptype{padding:9px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:11px;font-weight:700}.ptype.active{background:var(--ink);color:#fff}.pitch{white-space:pre-wrap;background:var(--ink);color:#ffffffe8;padding:16px;border-radius:10px;line-height:1.6;font-size:13px;margin-top:10px}.obj{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}.obj button{width:100%;border:0;background:#fff;padding:12px;text-align:left;font-weight:700}.ans{display:none;padding:12px;border-top:1px solid var(--border);font-size:13px;line-height:1.55;color:#475569}.lead{border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}.leadtop{display:flex;justify-content:space-between;gap:8px}.badge{font-size:10px;font-weight:800;padding:4px 7px;border-radius:20px;background:#e2e8f0}.log{font-size:12px;line-height:1.5}.note{font-size:12px;color:var(--muted);line-height:1.5}.launchstep{border-left:3px solid var(--accent);padding:9px 11px;margin:8px 0;background:#fffbeb}.known{color:var(--green);font-weight:800}.assumed{color:var(--accent);font-weight:800}@media(max-width:420px){.g2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+:root{--ink:#111827;--ink2:#1f2937;--accent:#d97706;--accentL:#fbbf24;--paper:#f8fafc;--white:#fff;--muted:#64748b;--border:#e2e8f0;--green:#15803d;--greenBg:#dcfce7;--red:#b91c1c;--redBg:#fee2e2;--amberBg:#fffbeb;--blue:#1d4ed8;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,Inter,system-ui,sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
+.shell{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:auto;background:var(--white);box-shadow:0 0 35px #0002;position:relative}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;-webkit-appearance:none}
+::-webkit-scrollbar{width:0;height:0}
+
+/* top bar */
+.top{background:var(--ink);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.logo{font-size:17px;font-weight:800;color:#fff}
+.logo b{color:var(--accentL)}
+.logo small{display:block;font-size:9px;color:#ffffff88;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:1px}
+.top .right{display:flex;gap:8px;align-items:center}
+.iconbtn{background:#ffffff14;border:1px solid #ffffff22;color:#fff;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:700;min-height:38px}
+
+/* tabs */
+.tabs{display:flex;overflow-x:auto;background:var(--ink2);flex-shrink:0;-webkit-overflow-scrolling:touch}
+.tab{min-width:64px;flex:1 0 auto;padding:12px 10px;border:0;border-bottom:3px solid transparent;background:none;color:#ffffffaa;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;min-height:46px}
+.tab.active{color:var(--accentL);border-bottom-color:var(--accentL)}
+
+.panels{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.panel{display:none;padding:14px 14px 90px}
+.panel.active{display:block}
+
+/* generic components */
+.card{border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;background:#fff}
+.head{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.head small{font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:12px 12px;border:1px solid var(--border);border-radius:9px;background:#f8fafc;color:var(--ink);min-height:44px}
+.field textarea{min-height:70px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:480px){.g2,.g3{grid-template-columns:1fr 1fr}}
+.btn{border:0;border-radius:9px;padding:13px 16px;font-weight:800;min-height:46px;font-size:13.5px}
+.btn.block{width:100%;margin-top:8px}
+.primary{background:var(--ink);color:#fff}
+.accentbtn{background:var(--accent);color:#fff}
+.outline{background:#fff;color:var(--ink);border:1px solid var(--border)}
+.danger{background:#fff;color:var(--red);border:1px solid #fecaca}
+.ghost{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.pill{border:1px solid var(--border);background:#fff;border-radius:20px;padding:9px 13px;font-weight:700;font-size:11.5px;min-height:38px}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.badge{font-size:9.5px;font-weight:800;padding:4px 8px;border-radius:20px;background:#e2e8f0;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.badge.known{background:var(--greenBg);color:var(--green)}
+.badge.estimated{background:var(--amberBg);color:var(--accent)}
+.badge.benchmark{background:#e0e7ff;color:#4338ca}
+.badge.state{background:var(--ink);color:#fff}
+.badge.won{background:var(--greenBg);color:var(--green)}
+.badge.lost{background:var(--redBg);color:var(--red)}
+.badge.overdue{background:var(--redBg);color:var(--red)}
+.badge.today{background:var(--amberBg);color:var(--accent)}
+.note{font-size:12px;color:var(--muted);line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.stat{background:#f1f5f9;border:1px solid var(--border);border-radius:9px;padding:11px 5px;text-align:center}
+.stat strong{display:block;font-size:20px;line-height:1.1}
+.stat span{font-size:8.5px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.hidden{display:none !important}
+.copybtn{font-size:11px;padding:8px 12px;min-height:36px}
+
+/* home / next action */
+.nextaction{background:linear-gradient(135deg,var(--ink),#312e13 180%);color:#fff;border-radius:14px;padding:20px;margin-bottom:14px}
+.nextaction small{color:#ffffff99;text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:800}
+.nextaction .txt{font-size:19px;font-weight:800;margin:8px 0 12px;line-height:1.3}
+.queue{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.queueitem{padding:11px 13px;border-bottom:1px solid var(--border);font-size:12.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.queueitem:last-child{border-bottom:0}
+
+/* prospect board */
+.slotgrid{display:grid;grid-template-columns:1fr;gap:10px}
+.pcard{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;width:100%;text-align:left}
+.pcard.empty{display:flex;align-items:center;justify-content:center;min-height:76px;border-style:dashed;color:var(--muted);font-weight:800;font-size:13px;background:#f8fafc}
+.pcard .top2{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.pcard .co{font-size:16px;font-weight:800}
+.pcard .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.pcard .leak{margin-top:9px;font-size:12px;background:#f8fafc;border-radius:8px;padding:9px 10px}
+.pcard .followrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px}
+
+/* modal / detail */
+.overlay{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.overlay.center{align-items:center;padding:14px}
+.sheet{background:#fff;width:100%;max-width:900px;max-height:92vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden}
+.overlay.center .sheet{border-radius:16px;max-height:88vh}
+.sheethead{padding:calc(12px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.sheethead .ttl{font-size:16px;font-weight:800}
+.sheetbody{overflow-y:auto;padding:14px 16px calc(24px + env(safe-area-inset-bottom))}
+.subtabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0}
+.subtab{padding:12px 12px;border:0;background:none;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;min-height:44px}
+.subtab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.subpanel{display:none}
+.subpanel.active{display:block}
+.closeicon{background:#f1f5f9;border:0;border-radius:50%;width:36px;height:36px;font-size:16px;font-weight:800;color:var(--muted)}
+
+.evrow{border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
+.evrow .evtop{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.evrow .impact{font-weight:800;font-size:15px}
+.toprow{background:var(--amberBg);border-color:#fde68a}
+
+.pitchbox{white-space:pre-wrap;background:var(--ink);color:#ffffffe8;padding:16px;border-radius:10px;line-height:1.6;font-size:13px;margin:10px 0}
+.pitchtypes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
+.ptype{padding:10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:11.5px;font-weight:700;min-height:42px}
+.ptype.active{background:var(--ink);color:#fff}
+
+.obj{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.obj button.q{width:100%;border:0;background:#fff;padding:13px;text-align:left;font-weight:700;min-height:46px;font-size:13px}
+.obj .ans{display:none;padding:13px;border-top:1px solid var(--border);font-size:12.5px;line-height:1.55;color:#475569;background:#f8fafc}
+.obj .ans.open{display:block}
+
+/* call mode */
+.callwrap{position:fixed;inset:0;background:var(--ink);z-index:60;display:flex;flex-direction:column;color:#fff}
+.callhead{padding:calc(14px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff22}
+.callbody{flex:1;overflow-y:auto;padding:16px 16px calc(30px + env(safe-area-inset-bottom))}
+.callco{font-size:26px;font-weight:900;margin-bottom:2px}
+.callsection{margin-top:18px}
+.callsection h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#f59e0b;margin-bottom:8px;font-weight:800}
+.callimpact{font-size:34px;font-weight:900;color:#fbbf24}
+.calltext{background:#ffffff12;border-radius:10px;padding:14px;font-size:14px;line-height:1.6}
+.callq{padding:9px 0;border-bottom:1px solid #ffffff18;font-size:14px}
+.callq:last-child{border-bottom:0}
+.callobj summary{cursor:pointer;font-weight:700;padding:9px 0;font-size:13.5px}
+.callobj p{font-size:12.5px;color:#e2e8f0;padding-bottom:9px;line-height:1.5}
+
+/* toast */
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:30px;font-size:12.5px;font-weight:700;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+.banner{background:var(--redBg);color:var(--red);padding:11px 14px;border-radius:9px;font-size:12px;font-weight:700;margin-bottom:12px}
+.launchstep{border-left:3px solid var(--accent);padding:10px 12px;margin:9px 0;background:var(--amberBg);border-radius:0 8px 8px 0}
+.known{color:var(--green);font-weight:800}
+.assumed{color:var(--accent);font-weight:800}
 </style>
 </head>
-<body><div class="shell">
-<div class="top"><div class="logo"><b>RRA</b> Revenue Recovery Agency</div><div class="label">Launch Sales Tool</div></div>
-<div class="tabs">
-<button class="tab active" data-p="calc">Revenue</button><button class="tab" data-p="leads">Pipeline</button><button class="tab" data-p="pitch">Pitch</button><button class="tab" data-p="obj">Objections</button><button class="tab" data-p="tracker">Tracker</button><button class="tab" data-p="notes">Notes</button><button class="tab" data-p="launch">Launch</button>
-</div><div class="panels">
-<section class="panel active" id="p-calc"><div class="meter"><small>Estimated recoverable revenue / month</small><div class="big" id="lost">$0</div><div id="calcsub">Use known numbers where possible</div></div><div class="card"><div class="head">Missed-call opportunity</div><div class="g2"><div class="field"><label>Missed calls / month</label><input id="missed" type="number" min="0" placeholder="e.g. 15"></div><div class="field"><label>Close rate %</label><input id="close" type="number" min="0" max="100" value="35"></div><div class="field"><label>Average service ticket $</label><input id="ticket" type="number" min="0" value="1500"></div><div class="field"><label>Input quality</label><select id="quality"><option>KNOWN</option><option selected>ESTIMATED</option><option>BENCHMARK</option></select></div></div><button class="btn primary" onclick="calc()">Calculate</button><p class="note" style="margin-top:10px">This is an opportunity estimate, not a promise of recovered revenue. Replace estimates with owner-provided or directly observed numbers before proposal delivery.</p></div><div class="card"><div class="head">RRA launch offer</div><div class="stats"><div class="stat"><strong>$0</strong><span>Scan</span></div><div class="stat"><strong>$997</strong><span>Good</span></div><div class="stat"><strong>$5K</strong><span>Better setup</span></div><div class="stat"><strong>$7.5K</strong><span>Best / mo</span></div></div><p class="note">Good fixes the single biggest validated leak. Better: $5,000 setup + $2,500/mo implementation. Best: $7,500/mo management when broader work is justified.</p></div></section>
-<section class="panel" id="p-leads"><div class="stats"><div class="stat"><strong id="nTarget">0</strong><span>Targets</span></div><div class="stat"><strong id="nSent">0</strong><span>Sent</span></div><div class="stat"><strong id="nConv">0</strong><span>Convos</span></div><div class="stat"><strong id="nWon">0</strong><span>Won</span></div></div><div class="card"><div class="head">Add HVAC target</div><div class="g2"><div class="field"><label>Business</label><input id="lBiz"></div><div class="field"><label>Owner / contact</label><input id="lOwner"></div><div class="field"><label>Phone</label><input id="lPhone"></div><div class="field"><label>URL</label><input id="lUrl"></div></div><div class="field"><label>Why this target / observed signal</label><textarea id="lWhy" rows="2"></textarea></div><button class="btn primary" onclick="addLead()">Add target</button></div><div id="leadList"></div><button class="btn danger" onclick="resetLeads()">Reset pipeline data</button></section>
-<section class="panel" id="p-pitch"><div class="card"><div class="head">Prospect details</div><div class="g2"><div class="field"><label>Business</label><input id="pBiz"></div><div class="field"><label>Owner</label><input id="pOwner"></div><div class="field"><label>Observed leak</label><input id="pLeak" placeholder="after-hours calls ring to voicemail"></div><div class="field"><label>Opportunity $ / month</label><input id="pOpp" type="number"></div></div><div class="field"><label>Evidence</label><input id="pEvidence" placeholder="Called Tuesday 6:45pm; no live response"></div></div><div class="pitchtypes"><button class="ptype active" data-t="email">First email</button><button class="ptype" data-t="call">Cold call</button><button class="ptype" data-t="d4">Day 4</button><button class="ptype" data-t="d11">Day 11</button></div><button class="btn primary" onclick="makePitch()">Generate</button><div class="pitch" id="pitchOut">Enter prospect evidence and generate a pitch.</div><button class="btn outline" onclick="copyPitch()">Copy</button></section>
-<section class="panel" id="p-obj"><div class="card"><div class="head">RRA objection handling</div><div id="objs"></div></div></section>
-<section class="panel" id="p-tracker"><div class="stats"><div class="stat"><strong id="tTotal">0</strong><span>Touches</span></div><div class="stat"><strong id="tReply">0</strong><span>Replies</span></div><div class="stat"><strong id="tMeeting">0</strong><span>Convos</span></div><div class="stat"><strong id="tSale">0</strong><span>Sales</span></div></div><div class="card"><div class="head">Log sales activity</div><div class="field"><label>Business</label><input id="tBiz"></div><div class="pills"><button class="pill" onclick="log('No Answer')">No Answer</button><button class="pill" onclick="log('Sent')">Sent</button><button class="pill" onclick="log('Reply')">Reply</button><button class="pill" onclick="log('Conversation')">Conversation</button><button class="pill" onclick="log('Lost')">Lost</button><button class="pill win" onclick="log('Sale')">Sale</button></div></div><div class="card"><div class="head">Activity</div><div id="activity" class="log">No activity yet.</div><button class="btn outline" onclick="exportCSV()">Export CSV</button></div></section>
-<section class="panel" id="p-notes"><div class="card"><div class="head">Field notes</div><div class="field"><textarea id="noteText" rows="4" placeholder="Objection, owner language, lost reason, offer feedback..."></textarea></div><button class="btn primary" onclick="saveNote()">Save note</button></div><div id="noteList"></div></section>
-<section class="panel" id="p-launch"><div class="card"><div class="head">RRA first-five launch protocol</div><div class="launchstep"><b>1. Select exactly five HVAC targets.</b><br><span class="note">Residential, owner-operated, 2-15 techs. No franchises, agencies, commercial-only shops, or firms with full-time marketing staff.</span></div><div class="launchstep"><b>2. Audit each target.</b><br><span class="note">Run the RRA audit, then manually verify the top revenue leak.</span></div><div class="launchstep"><b>3. Do the 20-minute truth pass.</b><br><span class="note">Reviews, mobile call/booking path, after-hours handling, service promise. Upgrade assumptions to <span class="known">KNOWN</span> wherever possible.</span></div><div class="launchstep"><b>4. Generate five client-facing proposals.</b><br><span class="note">Lead with one evidence-backed number and the $997 Good wedge. Never send the internal view.</span></div><div class="launchstep"><b>5. Send and follow up.</b><br><span class="note">Day 0 first touch, Day 4 follow-up, Day 11 final launch follow-up. Every sent prospect gets a next-action date.</span></div><div class="launchstep"><b>6. Read the market.</b><br><span class="note">2-3 sales: deliver and measure. Zero sales with conversations: change one variable. Zero replies: change target/message/evidence, not product architecture.</span></div></div><div class="card"><div class="head">Launch freeze</div><p class="note">No dashboard, CRM integration, second vertical, billing system, autonomous execution, orchestrator expansion, architecture refactor, or paid lead stack before the first-five cycle produces evidence.</p></div></section>
-</div></div>
+<body>
+<div class="shell" id="app">
+
+  <div class="top">
+    <div class="logo"><b>RRA</b> Sales Cockpit<small>Revenue Recovery Agency &middot; Launch Build</small></div>
+    <div class="right">
+      <button class="iconbtn" id="btnCallMode">Call Mode</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="mainTabs">
+    <button class="tab active" data-p="home">Home</button>
+    <button class="tab" data-p="prospects">Prospects</button>
+    <button class="tab" data-p="objections">Objections</button>
+    <button class="tab" data-p="activity">Activity</button>
+    <button class="tab" data-p="notes">Notes</button>
+    <button class="tab" data-p="launch">Launch</button>
+  </div>
+
+  <div class="panels" id="panels">
+
+    <!-- HOME -->
+    <section class="panel active" id="p-home">
+      <div id="corruptBanner"></div>
+      <div class="nextaction">
+        <small>Next Action</small>
+        <div class="txt" id="heroAction">Loading…</div>
+        <button class="btn accentbtn" id="heroGo">Open</button>
+      </div>
+      <div class="card">
+        <div class="head">Also due<small id="queueCount"></small></div>
+        <div class="queue" id="queueList"></div>
+      </div>
+      <div class="card">
+        <div class="head">Launch snapshot</div>
+        <div class="stats" id="homeStats"></div>
+        <p class="note">This tracks the first-five commercial validation cycle. It shows what happened — it does not decide whether RRA works.</p>
+      </div>
+    </section>
+
+    <!-- PROSPECTS -->
+    <section class="panel" id="p-prospects">
+      <div class="card">
+        <div class="head">Five-prospect launch board<small id="slotCount"></small></div>
+        <p class="note">Exactly five HVAC targets for this validation cycle. Replace a LOST slot rather than exceeding five.</p>
+      </div>
+      <div class="slotgrid" id="slotGrid"></div>
+    </section>
+
+    <!-- OBJECTIONS -->
+    <section class="panel" id="p-objections">
+      <div class="card">
+        <div class="head">RRA objection handling</div>
+        <p class="note">Never promise guaranteed recovered revenue. Lead with evidence, economics, and the fixed-fee single wedge.</p>
+      </div>
+      <div id="objList"></div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section class="panel" id="p-activity">
+      <div class="stats" id="activityStats"></div>
+      <div class="card">
+        <div class="head">Log activity</div>
+        <div class="field"><label>Prospect</label><select id="actProspect"></select></div>
+        <div class="field"><label>Type</label>
+          <select id="actType">
+            <option value="scan">Scan</option>
+            <option value="verification">Verification</option>
+            <option value="email">Email</option>
+            <option value="call">Call</option>
+            <option value="voicemail">Voicemail</option>
+            <option value="follow-up">Follow-up</option>
+            <option value="reply">Reply</option>
+            <option value="conversation">Conversation</option>
+            <option value="proposal">Proposal</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+        <div class="field"><label>Note (optional)</label><input id="actNote" placeholder="e.g. left voicemail, asked to call back Thursday"></div>
+        <button class="btn primary block" id="btnLogActivity">Log activity</button>
+      </div>
+      <div class="card">
+        <div class="head">Activity log<small id="activityCount"></small></div>
+        <div id="activityLog"></div>
+        <button class="btn outline block" id="btnExportCsv">Export CSV</button>
+      </div>
+    </section>
+
+    <!-- NOTES -->
+    <section class="panel" id="p-notes">
+      <div class="card">
+        <div class="head">Founder notes</div>
+        <p class="note">General notes not tied to a single prospect. Per-prospect notes live on each prospect card.</p>
+        <div class="field"><textarea id="genNoteText" rows="4" placeholder="Objection patterns, offer feedback, targeting ideas..."></textarea></div>
+        <button class="btn primary block" id="btnSaveGenNote">Save note</button>
+      </div>
+      <div id="genNoteList"></div>
+    </section>
+
+    <!-- LAUNCH -->
+    <section class="panel" id="p-launch">
+      <div class="card">
+        <div class="head">First-five scoreboard</div>
+        <div class="stats" id="scoreboardStats"></div>
+        <p class="note" id="scoreboardVerdict"></p>
+      </div>
+      <div class="card">
+        <div class="head">RRA first-five launch protocol</div>
+        <div class="launchstep"><b>1. Select exactly five HVAC targets.</b><br><span class="note">Residential, owner-operated, 2-15 techs. No franchises, agencies, commercial-only shops, or firms with full-time marketing staff.</span></div>
+        <div class="launchstep"><b>2. Audit each target.</b><br><span class="note">Run the RRA audit, then manually verify the top revenue leak.</span></div>
+        <div class="launchstep"><b>3. Do the 20-minute truth pass.</b><br><span class="note">Reviews, mobile call/booking path, after-hours handling, service promise. Upgrade assumptions to <span class="known">KNOWN</span> wherever possible.</span></div>
+        <div class="launchstep"><b>4. Build the $997 Good proposal.</b><br><span class="note">Lead with one evidence-backed number tied to the top validated leak. Never send the internal view.</span></div>
+        <div class="launchstep"><b>5. Send and follow up.</b><br><span class="note">Day 0 first touch, Day 4 follow-up, Day 11 final launch follow-up. Every sent prospect gets a next-action date.</span></div>
+        <div class="launchstep"><b>6. Read the market.</b><br><span class="note">2-3 sales: deliver and measure. Zero sales with conversations: change one variable. Zero replies: change target/message/evidence, not product architecture.</span></div>
+      </div>
+      <div class="card">
+        <div class="head">Launch freeze</div>
+        <p class="note">No dashboard, CRM integration, billing system, second vertical, autonomous execution, orchestrator expansion, architecture refactor, or paid lead stack before the first-five cycle produces evidence.</p>
+      </div>
+      <div class="card">
+        <div class="head">Data</div>
+        <div class="row">
+          <button class="btn outline" id="btnExportJson">Export RRA data</button>
+          <button class="btn outline" id="btnImportJson">Import RRA data</button>
+          <input type="file" id="importFile" accept="application/json" class="hidden">
+        </div>
+        <button class="btn danger block" id="btnResetTool">Reset tool</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Prospect add/edit + detail sheet -->
+<div class="overlay hidden" id="prospectOverlay">
+  <div class="sheet">
+    <div class="sheethead">
+      <div class="ttl" id="sheetTitle">Prospect</div>
+      <button class="closeicon" id="btnCloseSheet">&times;</button>
+    </div>
+    <div class="subtabs" id="sheetSubtabs">
+      <button class="subtab active" data-s="overview">Overview</button>
+      <button class="subtab" data-s="evidence">Evidence</button>
+      <button class="subtab" data-s="outreach">Outreach</button>
+      <button class="subtab" data-s="offer">$997 Offer</button>
+      <button class="subtab" data-s="pnotes">Notes</button>
+    </div>
+    <div class="sheetbody">
+
+      <div class="subpanel active" id="s-overview">
+        <div class="g2">
+          <div class="field"><label>Company</label><input id="pfCompany"></div>
+          <div class="field"><label>City / State</label><input id="pfCity"></div>
+        </div>
+        <div class="field"><label>Website</label><input id="pfWebsite" type="url" placeholder="https://"></div>
+        <div class="g2">
+          <div class="field"><label>Contact name</label><input id="pfContact"></div>
+          <div class="field"><label>Phone</label><input id="pfPhone" type="tel"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>Email</label><input id="pfEmail" type="email"></div>
+          <div class="field"><label>Source</label><input id="pfSource" placeholder="Google Maps, referral..."></div>
+        </div>
+        <div class="field"><label>Why this target</label><textarea id="pfWhy" rows="2"></textarea></div>
+        <div class="field"><label>Pipeline state</label>
+          <select id="pfState">
+            <option value="TARGET">TARGET</option>
+            <option value="AUDITED">AUDITED</option>
+            <option value="VERIFIED">VERIFIED</option>
+            <option value="PROPOSAL_READY">PROPOSAL_READY</option>
+            <option value="SENT">SENT</option>
+            <option value="CONVERSATION">CONVERSATION</option>
+            <option value="WON">WON</option>
+            <option value="LOST">LOST</option>
+            <option value="NURTURE">NURTURE</option>
+          </select>
+        </div>
+        <div class="field hidden" id="pfSentDateWrap"><label>First-touch (Day 0) date</label><input id="pfSentDate" type="date"></div>
+        <div class="row" id="followupActions"></div>
+        <button class="btn primary block" id="btnSaveProspect">Save prospect</button>
+        <button class="btn danger block" id="btnDeleteProspect">Delete / reset this slot</button>
+      </div>
+
+      <div class="subpanel" id="s-evidence">
+        <div class="card">
+          <div class="head">Revenue leak calculator</div>
+          <div class="row" style="margin-bottom:10px">
+            <button class="pill on" data-calc="missed">Missed-call leak</button>
+            <button class="pill" data-calc="booking">Booking-friction leak</button>
+          </div>
+          <div id="calcMissed">
+            <div class="g2">
+              <div class="field"><label>Inbound calls / month</label><input id="cMissedInbound" type="number" min="0" inputmode="numeric" placeholder="e.g. 140"></div>
+              <div class="field"><label>Missed-call rate %</label><input id="cMissedPct" type="number" min="0" max="100" inputmode="numeric" value="45"></div>
+              <div class="field"><label>Close rate on recovered calls %</label><input id="cMissedClose" type="number" min="0" max="100" inputmode="numeric" value="35"></div>
+              <div class="field"><label>Average job value $</label><input id="cMissedTicket" type="number" min="0" inputmode="numeric" value="550"></div>
+            </div>
+          </div>
+          <div id="calcBooking" class="hidden">
+            <div class="g2">
+              <div class="field"><label>Monthly site visits/contacts</label><input id="cBookVisits" type="number" min="0" inputmode="numeric" placeholder="e.g. 400"></div>
+              <div class="field"><label>Current booking/contact rate %</label><input id="cBookNow" type="number" min="0" max="100" inputmode="numeric" placeholder="e.g. 5"></div>
+              <div class="field"><label>Achievable booking rate %</label><input id="cBookTarget" type="number" min="0" max="100" inputmode="numeric" placeholder="e.g. 9"></div>
+              <div class="field"><label>Average job value $</label><input id="cBookTicket" type="number" min="0" inputmode="numeric" value="550"></div>
+            </div>
+          </div>
+          <div class="field"><label>Input quality</label>
+            <select id="cQuality"><option>KNOWN</option><option selected>ESTIMATED</option><option>BENCHMARK</option></select>
+          </div>
+          <div class="stat" style="text-align:left;padding:14px">
+            <span>Monthly opportunity (<span id="calcQualityLabel">estimated</span>)</span>
+            <strong id="calcResult" style="font-size:28px">$0</strong>
+            <div class="note" id="calcSub"></div>
+          </div>
+          <p class="note">This is an opportunity estimate, not a promise of recovered revenue. Replace estimates with owner-provided or directly observed numbers before sending a proposal.</p>
+          <div class="field"><label>Associated RRA HVAC leak</label><select id="cLeakId"></select></div>
+          <div class="field"><label>Observed issue</label><input id="cIssue" placeholder="After-hours calls ring to voicemail"></div>
+          <div class="field"><label>Evidence / source</label><input id="cSource" placeholder="Called Tuesday 6:45pm; no live response"></div>
+          <button class="btn accentbtn block" id="btnAddEvidence">Add as evidence</button>
+        </div>
+        <div class="card">
+          <div class="head">Evidence on file<small id="evCount"></small></div>
+          <div id="evList"></div>
+          <p class="note">The top validated opportunity below drives the $997 Good offer.</p>
+        </div>
+      </div>
+
+      <div class="subpanel" id="s-outreach">
+        <div class="pitchtypes">
+          <button class="ptype active" data-t="email">First email</button>
+          <button class="ptype" data-t="call">Cold call opener</button>
+          <button class="ptype" data-t="d4">Day 4 follow-up</button>
+          <button class="ptype" data-t="d11">Day 11 follow-up</button>
+        </div>
+        <div class="pitchbox" id="pitchOut">Add evidence first, then generate outreach.</div>
+        <button class="btn outline block copybtn" id="btnCopyPitch">Copy to clipboard</button>
+      </div>
+
+      <div class="subpanel" id="s-offer">
+        <div id="offerOut"></div>
+      </div>
+
+      <div class="subpanel" id="s-pnotes">
+        <div class="field"><textarea id="pNoteText" rows="3" placeholder="Call notes, objections raised, next step..."></textarea></div>
+        <button class="btn primary block" id="btnSavePNote">Save note</button>
+        <div id="pNoteList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Reset confirm -->
+<div class="overlay center hidden" id="resetOverlay">
+  <div class="sheet" style="max-width:420px">
+    <div class="sheethead"><div class="ttl">Reset tool</div><button class="closeicon" id="btnCloseReset">&times;</button></div>
+    <div class="sheetbody">
+      <p class="note" style="margin-bottom:10px">This permanently deletes all prospects, evidence, activity, and notes on this device. Export a backup first if you want to keep this data.</p>
+      <div class="field"><label>Type RESET to confirm</label><input id="resetConfirmInput" placeholder="RESET"></div>
+      <button class="btn danger block" id="btnConfirmReset">Permanently reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Won detail -->
+<div class="overlay center hidden" id="wonOverlay">
+  <div class="sheet" style="max-width:420px">
+    <div class="sheethead"><div class="ttl">Mark WON</div><button class="closeicon" id="btnCloseWon">&times;</button></div>
+    <div class="sheetbody">
+      <div class="field"><label>Tier sold</label>
+        <select id="wonTier">
+          <option value="good">Good — $997 fixed fee</option>
+          <option value="better">Better — $5,000 setup + $2,500/mo</option>
+          <option value="best">Best — $7,500/mo</option>
+        </select>
+      </div>
+      <div class="field"><label>Amount collected so far $</label><input id="wonAmount" type="number" min="0" value="997"></div>
+      <button class="btn primary block" id="btnConfirmWon">Confirm win</button>
+    </div>
+  </div>
+</div>
+
+<!-- Call mode -->
+<div class="callwrap hidden" id="callWrap">
+  <div class="callhead">
+    <select id="callProspectSelect" style="background:#ffffff14;color:#fff;border:1px solid #ffffff33;border-radius:8px;padding:10px;min-height:44px;flex:1;margin-right:10px"></select>
+    <button class="iconbtn" id="btnExitCall">Exit</button>
+  </div>
+  <div class="callbody" id="callBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const $=id=>document.getElementById(id),fmt=n=>'$'+Math.round(n).toLocaleString();document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('p-'+b.dataset.p).classList.add('active')});
-function calc(){let m=+$('missed').value||0,c=(+$('close').value||0)/100,t=+$('ticket').value||0,v=m*c*t;$('lost').textContent=fmt(v);$('calcsub').textContent=`${(m*c).toFixed(1)} potential jobs at ${fmt(t)} | ${$('quality').value}`}
-let leads=JSON.parse(localStorage.getItem('rra_leads')||'[]');function saveLeads(){localStorage.setItem('rra_leads',JSON.stringify(leads));renderLeads()}function addLead(){if(!$('lBiz').value.trim())return;leads.unshift({id:Date.now(),biz:$('lBiz').value.trim(),owner:$('lOwner').value.trim(),phone:$('lPhone').value.trim(),url:$('lUrl').value.trim(),why:$('lWhy').value.trim(),state:'TARGET',next:''});['lBiz','lOwner','lPhone','lUrl','lWhy'].forEach(x=>$(x).value='');saveLeads()}function setState(id,s){let l=leads.find(x=>x.id===id);if(l){l.state=s;saveLeads()}}function delLead(id){leads=leads.filter(x=>x.id!==id);saveLeads()}function esc(s){let d=document.createElement('div');d.textContent=s||'';return d.innerHTML}function renderLeads(){$('nTarget').textContent=leads.length;$('nSent').textContent=leads.filter(x=>['SENT','CONVERSATION','WON'].includes(x.state)).length;$('nConv').textContent=leads.filter(x=>['CONVERSATION','WON'].includes(x.state)).length;$('nWon').textContent=leads.filter(x=>x.state==='WON').length;$('leadList').innerHTML=leads.map(l=>`<div class="lead"><div class="leadtop"><div><b>${esc(l.biz)}</b><div class="note">${esc(l.owner)} ${esc(l.phone)}</div></div><span class="badge">${l.state}</span></div><p class="note" style="margin-top:6px">${esc(l.why)}</p><div class="pills" style="margin-top:8px">${['AUDITED','VERIFIED','PROPOSAL_READY','SENT','CONVERSATION','WON','LOST','NURTURE'].map(s=>`<button class="pill" onclick="setState(${l.id},'${s}')">${s}</button>`).join('')}<button class="pill" onclick="delLead(${l.id})">Delete</button></div></div>`).join('')||'<p class="note">No targets yet. First launch cohort is five.</p>'}function resetLeads(){if(confirm('Reset RRA pipeline?')){leads=[];saveLeads()}}
-let pitchType='email';document.querySelectorAll('.ptype').forEach(b=>b.onclick=()=>{document.querySelectorAll('.ptype').forEach(x=>x.classList.remove('active'));b.classList.add('active');pitchType=b.dataset.t});function makePitch(){let biz=$('pBiz').value||'[Business]',o=$('pOwner').value||'[Owner]',leak=$('pLeak').value||'[observed leak]',ev=$('pEvidence').value||'[evidence]',opp=+$('pOpp').value||0,n=opp?fmt(opp)+'/month':'[estimated monthly opportunity]';let p={email:`Subject: ${biz}: one revenue leak I found\n\n${o},\n\nI found one issue worth showing you: ${leak}.\n\nEvidence: ${ev}.\n\nUsing the assumptions in my breakdown, the opportunity is roughly ${n}. If you give me your actual numbers, I will replace the estimates and recalculate it.\n\nRRA's first recommendation is not a marketing package. It is one fix for the biggest validated leak. The fixed-fee Good option is $997.\n\nWorth 10 minutes to walk through the evidence?\n\n[YOUR NAME]`,call:`${o}, I run Revenue Recovery Agency. I looked at ${biz} and found one revenue leak I wanted to verify with you: ${leak}. The evidence I have is ${ev}. I am not calling to sell you marketing. I size revenue leaks and fix the biggest one first. My estimate is about ${n}, but I would rather use your real numbers. Can I ask you two questions about how you handle this today?`,d4:`Subject: Re: ${biz} revenue leak\n\n${o}, following up on the ${leak} I found at ${biz}. The important part is the evidence: ${ev}. If my assumptions are wrong, send me the real numbers and I will recalculate it. If the leak is real, the first fix is $997. Worth a quick look?`,d11:`Subject: Closing the loop on ${biz}\n\n${o}, last follow-up from me on this. I flagged ${leak} because ${ev}. If it is already handled, I will close this out. If not, I can show you the evidence and the single-fix $997 option in 10 minutes.`};$('pitchOut').textContent=p[pitchType]}function copyPitch(){navigator.clipboard?.writeText($('pitchOut').textContent)}
-const objections=[["How did you get that number?","I will show you every input. I separate known observations from estimates and benchmarks. Give me your actual call volume, close rate, and ticket value and I will recalculate it with your numbers."],["Is this marketing?","No. RRA starts with a measurable revenue leak. The first engagement fixes the biggest validated leak. Some fixes may touch marketing later, but that is not what I am asking you to buy."],["Is this AI?","RRA may use automation where it helps. What you are buying is the operational fix to a documented revenue leak, not a technology package."],["Send me information.","Absolutely. I will send the client-facing breakdown with the evidence, assumptions, opportunity, and next step. Can we put 10 minutes on the calendar after you review it?"],["$997 is too expensive.","If the validated opportunity is not large enough to justify $997, you should not buy it. Let us use your actual numbers and see whether the economics support the fix."],["I already have someone handling calls.","Good. Then the question is not whether you have staff. It is whether the specific leak I observed still exists. If it does not, I will remove it from the analysis."],["I'll think about it.","Fair. What part needs thought: whether the leak is real, the size of the opportunity, or whether the fix is worth $997?"],["Not now.","Understood. I will mark it for later rather than keep chasing you. Is 30 days reasonable, or should I close it out?"]];$('objs').innerHTML=objections.map((x,i)=>`<div class="obj"><button onclick="document.getElementById('a${i}').style.display=document.getElementById('a${i}').style.display==='block'?'none':'block'">“${x[0]}”</button><div class="ans" id="a${i}">${x[1]}</div></div>`).join('');
-let acts=JSON.parse(localStorage.getItem('rra_activity')||'[]');function log(out){let biz=$('tBiz').value.trim()||'(unnamed)';acts.push({biz,out,ts:new Date().toLocaleString()});localStorage.setItem('rra_activity',JSON.stringify(acts));$('tBiz').value='';renderActs()}function renderActs(){$('tTotal').textContent=acts.length;$('tReply').textContent=acts.filter(x=>x.out==='Reply').length;$('tMeeting').textContent=acts.filter(x=>x.out==='Conversation').length;$('tSale').textContent=acts.filter(x=>x.out==='Sale').length;$('activity').innerHTML=acts.slice().reverse().map(x=>`<div>${esc(x.biz)} · <b>${x.out}</b> · ${esc(x.ts)}</div>`).join('')||'No activity yet.'}function exportCSV(){let rows=[['Business','Outcome','Time'],...acts.map(x=>[x.biz,x.out,x.ts])],csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='rra-sales-activity.csv';a.click()}
-let notes=JSON.parse(localStorage.getItem('rra_notes')||'[]');function saveNote(){let t=$('noteText').value.trim();if(!t)return;notes.unshift({id:Date.now(),t,ts:new Date().toLocaleString()});localStorage.setItem('rra_notes',JSON.stringify(notes));$('noteText').value='';renderNotes()}function renderNotes(){$('noteList').innerHTML=notes.map(n=>`<div class="card"><div class="note">${esc(n.ts)}</div><div>${esc(n.t)}</div></div>`).join('')}
-renderLeads();renderActs();renderNotes();calc();
-</script></body></html>
+(function(){
+"use strict";
+
+/* ---------- constants ---------- */
+var LEAK_LIBRARY=[
+  {id:"HVAC-LEAK-001",name:"Missed calls and slow lead response",category:"lead_capture",action:"Deploy missed-call text-back + AI receptionist / after-hours routing"},
+  {id:"HVAC-LEAK-002",name:"Booking friction on website and mobile",category:"conversion_friction",action:"Simplify booking flow: above-fold CTA, short form, one-tap call"},
+  {id:"HVAC-LEAK-003",name:"Weak estimate / quote follow-up",category:"follow_up",action:"Install estimate follow-up sequence (email + SMS + call)"},
+  {id:"HVAC-LEAK-004",name:"Unworked leads and no systematic follow-up",category:"follow_up",action:"Deploy lead qualification + follow-up automation"},
+  {id:"HVAC-LEAK-005",name:"Weak local visibility and Google Business Profile",category:"local_visibility",action:"Optimize GMB, service-area pages, local citations"},
+  {id:"HVAC-LEAK-006",name:"Poor AI-search visibility (GEO)",category:"ai_search_visibility",action:"Add schema, structured content, and citation-ready assets"},
+  {id:"HVAC-LEAK-007",name:"Weak reputation and unanswered reviews",category:"reputation_trust",action:"Deploy review monitoring, responses, and post-job review requests"},
+  {id:"HVAC-LEAK-008",name:"Weak service pages",category:"conversion_friction",action:"Rewrite high-value service pages"},
+  {id:"HVAC-LEAK-009",name:"Weak maintenance-plan conversion",category:"conversion_friction",action:"Install maintenance-agreement conversion sequence"},
+  {id:"HVAC-LEAK-010",name:"No systematic referral system",category:"follow_up",action:"Install referral + review request sequence"}
+];
+function leakById(id){for(var i=0;i<LEAK_LIBRARY.length;i++){if(LEAK_LIBRARY[i].id===id)return LEAK_LIBRARY[i];}return null;}
+
+var PIPELINE_STATES=["TARGET","AUDITED","VERIFIED","PROPOSAL_READY","SENT","CONVERSATION","WON","LOST","NURTURE"];
+var MAX_SLOTS=5;
+var STORAGE_KEY="rra_state_v2";
+var BACKUP_KEY="rra_state_v2_backup";
+
+var OBJECTIONS=[
+  ["We're fine.","Good — then this costs you ten minutes to confirm. If the leak I found isn't real, I'll say so and we're done. If it is, you'll know exactly what it's costing you."],
+  ["My receptionist handles that.","Then the question isn't whether someone answers — it's whether the specific gap I observed still happens. I called at [time] and got [result]. If your receptionist covers that window, I'll remove it from the analysis."],
+  ["We already have software.","Software that isn't closing this specific gap is exactly why the leak is still showing up. I'm not asking you to replace anything — just fix the one leak the evidence points to."],
+  ["We don't miss many calls.","That's a testable claim, not a guess — I'll show you exactly how I observed the gap. If your real numbers are better than what I assumed, give them to me and I'll recalculate it live."],
+  ["Send me information.","Absolutely — I'll send the client-facing breakdown with the evidence, the assumptions, and the one number that matters. Can we put 10 minutes on the calendar after you've looked at it?"],
+  ["$997 is expensive.","If the validated opportunity doesn't clear $997, you shouldn't buy it — that's the test. Give me your real call volume, close rate, and ticket value and let's see if the economics hold up."],
+  ["I need to think about it.","Fair. What specifically needs thought — whether the leak is real, the size of the number, or whether $997 is worth it to find out?"],
+  ["I need to talk to my partner.","Makes sense. Want me to send the one-page breakdown so you both have the same evidence in front of you before that conversation?"],
+  ["We already have an agency.","This isn't an agency engagement — it's one fixed-fee fix for one documented leak. It doesn't compete with anything your agency is already doing."],
+  ["How do I know this will work?","You'll know because we measure it. Thirty days after the fix, we look at the same numbers we used to size the leak and compare. If it didn't move, you'll see that too."],
+  ["Can you guarantee revenue?","No — and anyone who does is guessing. What I can guarantee is a documented leak, a conservative estimate labeled by how sure we are, and a fixed price to fix the single biggest one."],
+  ["Not now.","Understood. I'll mark this for a 30-day re-engage rather than keep chasing you. If something changes sooner, you have my number."]
+];
+
+var DISCOVERY_QUESTIONS=[
+  "Roughly how many inbound calls do you receive in a normal month?",
+  "What happens when nobody answers?",
+  "Do missed callers receive an immediate text?",
+  "How many of those calls become booked jobs?",
+  "What's an average completed job worth to you?",
+  "How are after-hours calls handled today?"
+];
+
+/* ---------- state ---------- */
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function nowISO(){return new Date().toISOString();}
+function fmtMoney(n){n=Math.round(Number(n)||0);return "$"+n.toLocaleString();}
+function fmtDate(d){if(!d)return "";var dt=(d instanceof Date)?d:new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString(undefined,{month:"short",day:"numeric"});}
+function addDays(dateStr,days){var d=new Date(dateStr+"T00:00:00");d.setDate(d.getDate()+days);return d;}
+function daysBetween(a,b){return Math.round((b-a)/86400000);}
+function esc(s){var d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML;}
+
+function defaultState(){
+  return {version:2,prospects:[],activities:[],generalNotes:[],settings:{}};
+}
+
+var STATE=null;
+var corrupted=false;
+
+function safeParse(raw){
+  try{
+    var obj=JSON.parse(raw);
+    if(!obj||typeof obj!=="object"||!Array.isArray(obj.prospects))return null;
+    return obj;
+  }catch(e){return null;}
+}
+
+function migrateOldData(state){
+  try{
+    var rawLeads=localStorage.getItem("rra_leads");
+    var rawActivity=localStorage.getItem("rra_activity");
+    var rawNotes=localStorage.getItem("rra_notes");
+    if(!rawLeads&&!rawActivity&&!rawNotes)return state;
+    var nameToId={};
+    if(rawLeads){
+      var leads=JSON.parse(rawLeads);
+      if(Array.isArray(leads)){
+        leads.forEach(function(l){
+          var id=uid();
+          nameToId[(l.biz||"").toLowerCase()]=id;
+          var evidence=[];
+          if(l.why){evidence.push({id:uid(),issue:l.why,source:"",leakId:null,quality:"ESTIMATED",impact:0,priority:3,notes:"",ts:nowISO()});}
+          var st=PIPELINE_STATES.indexOf(l.state)>=0?l.state:"TARGET";
+          state.prospects.push({
+            id:id,company:l.biz||"(unnamed)",website:l.url||"",city:"",contact:l.owner||"",email:"",phone:l.phone||"",
+            source:"migrated",notes:[],state:st,dateAdded:nowISO(),lastContact:"",sentDate:null,followupsSent:0,
+            outcome:(st==="WON"||st==="LOST"||st==="NURTURE")?st:null,wonDetails:null,
+            calc:{mode:"missed"},evidence:evidence,topLeakId:evidence[0]?evidence[0].id:null
+          });
+        });
+      }
+    }
+    if(rawActivity){
+      var acts=JSON.parse(rawActivity);
+      var typeMap={"No Answer":"call","Sent":"email","Reply":"reply","Conversation":"conversation","Lost":"lost","Sale":"won"};
+      if(Array.isArray(acts)){
+        acts.forEach(function(a){
+          state.activities.push({id:uid(),prospectId:nameToId[(a.biz||"").toLowerCase()]||null,prospectName:a.biz||"(unnamed)",type:typeMap[a.out]||"call",ts:a.ts||nowISO(),note:""});
+        });
+      }
+    }
+    if(rawNotes){
+      var notes=JSON.parse(rawNotes);
+      if(Array.isArray(notes)){
+        notes.forEach(function(n){state.generalNotes.push({id:uid(),text:n.t||"",ts:n.ts||nowISO()});});
+      }
+    }
+  }catch(e){/* migration is best-effort; never block load */}
+  return state;
+}
+
+function loadState(){
+  var raw=localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    var parsed=safeParse(raw);
+    if(parsed)return parsed;
+    var backupRaw=localStorage.getItem(BACKUP_KEY);
+    var backup=backupRaw?safeParse(backupRaw):null;
+    corrupted=true;
+    return backup||defaultState();
+  }
+  var fresh=defaultState();
+  fresh=migrateOldData(fresh);
+  return fresh;
+}
+
+function saveState(){
+  try{
+    var raw=JSON.stringify(STATE);
+    var prev=localStorage.getItem(STORAGE_KEY);
+    if(prev)localStorage.setItem(BACKUP_KEY,prev);
+    localStorage.setItem(STORAGE_KEY,raw);
+  }catch(e){toast("Save failed — storage may be full");}
+}
+
+/* ---------- derived helpers ---------- */
+function prospectById(id){for(var i=0;i<STATE.prospects.length;i++){if(STATE.prospects[i].id===id)return STATE.prospects[i];}return null;}
+function evidenceSorted(p){return (p.evidence||[]).slice().sort(function(a,b){return (b.impact||0)-(a.impact||0);});}
+function topEvidence(p){
+  if(p.topLeakId){var pinned=(p.evidence||[]).filter(function(e){return e.id===p.topLeakId;})[0];if(pinned)return pinned;}
+  var sorted=evidenceSorted(p);
+  return sorted[0]||null;
+}
+
+function followupInfo(p){
+  if(!p.sentDate)return null;
+  if(p.state!=="SENT"&&p.state!=="CONVERSATION")return null;
+  if(p.outcome)return null;
+  var seq=[4,11];
+  if(p.followupsSent>=seq.length){
+    return {due:null,label:"Follow-up cycle complete",status:"complete"};
+  }
+  var dueDate=addDays(p.sentDate,seq[p.followupsSent]);
+  var today=new Date();today.setHours(0,0,0,0);
+  var diff=daysBetween(today,dueDate);
+  var status=diff<0?"overdue":(diff===0?"today":"upcoming");
+  return {due:dueDate,label:"Day "+seq[p.followupsSent]+" follow-up",status:status};
+}
+
+function prospectAction(p){
+  if(p.outcome==="WON"||p.outcome==="LOST")return null;
+  if(p.outcome==="NURTURE"){
+    if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
+      return {text:"Re-engage "+p.company+" (NURTURE 30-day mark passed)",urgency:2,kind:"reengage"};
+    }
+    return null;
+  }
+  var fu=followupInfo(p);
+  if(fu&&fu.status==="overdue")return {text:fu.label+" OVERDUE — "+p.company,urgency:0,kind:"followup"};
+  if(fu&&fu.status==="today")return {text:fu.label+" due today — "+p.company,urgency:1,kind:"followup"};
+  if(p.state==="CONVERSATION")return {text:"Continue conversation — push next step with "+p.company,urgency:2,kind:"conversation"};
+  if(p.state==="PROPOSAL_READY")return {text:"Send initial outreach to "+p.company,urgency:3,kind:"send"};
+  if(p.state==="VERIFIED"){
+    if((p.evidence||[]).length)return {text:"Build the $997 proposal for "+p.company,urgency:4,kind:"offer"};
+    return {text:"Add evidence for "+p.company,urgency:4,kind:"evidence"};
+  }
+  if(p.state==="AUDITED")return {text:"Verify "+p.company+" evidence (20-minute pass)",urgency:5,kind:"verify"};
+  if(p.state==="TARGET"){
+    if(!(p.evidence||[]).length)return {text:"Scan "+p.company,urgency:6,kind:"scan"};
+    return {text:"Mark "+p.company+" AUDITED once scanned",urgency:6,kind:"audit"};
+  }
+  if(fu&&fu.status==="upcoming")return {text:p.company+" — "+fu.label+" upcoming ("+fmtDate(fu.due)+")",urgency:8,kind:"upcoming"};
+  return null;
+}
+
+function nextActionQueue(){
+  var items=[];
+  STATE.prospects.forEach(function(p){
+    var a=prospectAction(p);
+    if(a){a.prospectId=p.id;items.push(a);}
+  });
+  var filled=STATE.prospects.length;
+  if(filled<MAX_SLOTS){
+    items.push({text:"Add Prospect #"+(filled+1)+" — cohort not full",urgency:9,kind:"add"});
+  }
+  items.sort(function(a,b){return a.urgency-b.urgency;});
+  return items;
+}
+
+/* ---------- toast ---------- */
+var toastTimer=null;
+function toast(msg){
+  var el=document.getElementById("toast");
+  el.textContent=msg;el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
+}
+
+function copyText(text){
+  function ok(){toast("Copied");}
+  function fail(){
+    try{
+      var ta=document.createElement("textarea");
+      ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+      document.body.appendChild(ta);ta.focus();ta.select();
+      document.execCommand("copy");document.body.removeChild(ta);ok();
+    }catch(e){toast("Copy failed — select text manually");}
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok,fail);
+  }else{fail();}
+}
+
+/* ---------- tabs ---------- */
+document.getElementById("mainTabs").addEventListener("click",function(e){
+  var btn=e.target.closest(".tab");if(!btn)return;
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});
+  document.querySelectorAll(".panel").forEach(function(x){x.classList.remove("active");});
+  btn.classList.add("active");
+  document.getElementById("p-"+btn.dataset.p).classList.add("active");
+});
+function gotoTab(name){
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("active",x.dataset.p===name);});
+  document.querySelectorAll(".panel").forEach(function(x){x.classList.toggle("active",x.id==="p-"+name);});
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  var q=nextActionQueue();
+  var hero=q[0];
+  document.getElementById("heroAction").textContent=hero?hero.text:"Nothing due — add a prospect to begin.";
+  var goBtn=document.getElementById("heroGo");
+  goBtn.onclick=function(){
+    if(!hero||hero.kind==="add"){gotoTab("prospects");return;}
+    openProspectSheet(hero.prospectId);
+  };
+  var rest=q.slice(1,5);
+  document.getElementById("queueCount").textContent=rest.length?(rest.length+" more"):"";
+  var list=document.getElementById("queueList");
+  if(!rest.length){
+    list.innerHTML='<div class="queueitem"><span class="note">Nothing else due right now.</span></div>';
+  }else{
+    list.innerHTML=rest.map(function(it){
+      return '<div class="queueitem" data-goto="'+esc(it.prospectId||"")+'" data-kind="'+esc(it.kind)+'"><span>'+esc(it.text)+"</span><span>&rsaquo;</span></div>";
+    }).join("");
+    Array.prototype.forEach.call(list.querySelectorAll(".queueitem"),function(el){
+      el.addEventListener("click",function(){
+        var id=el.getAttribute("data-goto");
+        if(el.getAttribute("data-kind")==="add"){gotoTab("prospects");return;}
+        if(id)openProspectSheet(id);
+      });
+    });
+  }
+
+  var scans=STATE.prospects.filter(function(p){return p.state!=="TARGET"||(p.evidence||[]).length;}).length;
+  var opps=STATE.prospects.reduce(function(s,p){return s+(p.evidence||[]).length;},0);
+  var sent=STATE.prospects.filter(function(p){return !!p.sentDate;}).length;
+  var replies=STATE.activities.filter(function(a){return a.type==="reply";}).length;
+  var convos=STATE.prospects.filter(function(p){return p.state==="CONVERSATION"||p.outcome==="WON";}).length;
+  var proposals=STATE.activities.filter(function(a){return a.type==="proposal";}).length;
+  var wins=STATE.prospects.filter(function(p){return p.outcome==="WON";}).length;
+  var collected=STATE.prospects.reduce(function(s,p){return s+((p.wonDetails&&p.wonDetails.amount)||0);},0);
+
+  var stats=[
+    ["Prospects",STATE.prospects.length+"/"+MAX_SLOTS],
+    ["Scanned",scans],
+    ["Opportunities",opps],
+    ["Sent",sent],
+    ["Replies",replies],
+    ["Conversations",convos],
+    ["Proposals",proposals],
+    ["Won",wins]
+  ];
+  document.getElementById("homeStats").innerHTML=stats.map(function(s){
+    return '<div class="stat"><strong>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
+  }).join("")+'<div class="stat" style="grid-column:span 4"><strong>'+fmtMoney(collected)+'</strong><span>Collected revenue</span></div>';
+
+  var banner=document.getElementById("corruptBanner");
+  banner.innerHTML=corrupted?'<div class="banner">Local data on this device was corrupted and has been reset (a backup copy was used if one existed). If you have an exported JSON backup, use Launch &rarr; Import RRA data to restore it.</div>':"";
+}
+
+/* ============ PROSPECTS ============ */
+function renderSlots(){
+  document.getElementById("slotCount").textContent=STATE.prospects.length+"/"+MAX_SLOTS+" filled";
+  var grid=document.getElementById("slotGrid");
+  var html="";
+  for(var i=0;i<MAX_SLOTS;i++){
+    var p=STATE.prospects[i];
+    if(!p){
+      html+='<button class="pcard empty" data-add="1">+ Add Prospect #'+(i+1)+"</button>";
+      continue;
+    }
+    var top=topEvidence(p);
+    var fu=followupInfo(p);
+    var stateBadge='<span class="badge state">'+esc(p.state)+"</span>";
+    if(p.outcome==="WON")stateBadge='<span class="badge won">WON</span>';
+    if(p.outcome==="LOST")stateBadge='<span class="badge lost">LOST</span>';
+    var leakHtml=top?('<div class="leak"><b>'+esc(top.issue||"Top leak")+"</b><br>"+fmtMoney(top.impact)+"/mo &middot; "+qualityBadge(top.quality)+"</div>"):'<div class="leak note">No evidence yet — run a scan and add findings.</div>';
+    var followHtml="";
+    if(fu&&fu.status!=="complete"){
+      var cls=fu.status==="overdue"?"overdue":(fu.status==="today"?"today":"");
+      followHtml='<div class="followrow"><span>'+esc(fu.label)+"</span>"+(cls?'<span class="badge '+cls+'">'+fu.status.toUpperCase()+"</span>":'<span class="note">'+fmtDate(fu.due)+"</span>")+"</div>";
+    }
+    html+='<button class="pcard" data-open="'+p.id+'"><div class="top2"><div><div class="co">'+esc(p.company)+'</div><div class="sub">'+esc(p.city||"")+(p.contact?" &middot; "+esc(p.contact):"")+"</div></div>"+stateBadge+"</div>"+leakHtml+followHtml+"</button>";
+  }
+  grid.innerHTML=html;
+  Array.prototype.forEach.call(grid.querySelectorAll("[data-open]"),function(el){
+    el.addEventListener("click",function(){openProspectSheet(el.getAttribute("data-open"));});
+  });
+  Array.prototype.forEach.call(grid.querySelectorAll("[data-add]"),function(el){
+    el.addEventListener("click",function(){openProspectSheet(null);});
+  });
+}
+function qualityBadge(q){
+  q=q||"ESTIMATED";
+  var cls=q==="KNOWN"?"known":(q==="BENCHMARK"?"benchmark":"estimated");
+  return '<span class="badge '+cls+'">'+q+"</span>";
+}
+
+/* ---------- prospect sheet ---------- */
+var currentProspectId=null;
+function openProspectSheet(id){
+  currentProspectId=id;
+  var p=id?prospectById(id):null;
+  document.getElementById("sheetTitle").textContent=p?p.company:"Add prospect";
+  document.getElementById("pfCompany").value=p?p.company:"";
+  document.getElementById("pfCity").value=p?p.city||"":"";
+  document.getElementById("pfWebsite").value=p?p.website||"":"";
+  document.getElementById("pfContact").value=p?p.contact||"":"";
+  document.getElementById("pfPhone").value=p?p.phone||"":"";
+  document.getElementById("pfEmail").value=p?p.email||"":"";
+  document.getElementById("pfSource").value=p?p.source||"":"";
+  document.getElementById("pfWhy").value=p&&p.evidence&&p.evidence[0]?p.evidence[0].issue:"";
+  document.getElementById("pfState").value=p?p.state:"TARGET";
+  document.getElementById("pfSentDate").value=p&&p.sentDate?p.sentDate:todayISO();
+  toggleSentDateField();
+  renderFollowupActions(p);
+  document.getElementById("btnDeleteProspect").classList.toggle("hidden",!p);
+  var leakSel=document.getElementById("cLeakId");
+  leakSel.innerHTML=LEAK_LIBRARY.map(function(l){return '<option value="'+l.id+'">'+esc(l.name)+"</option>";}).join("");
+  setSubtab("overview");
+  document.getElementById("calcResult").textContent="$0";
+  document.getElementById("calcSub").textContent="";
+  if(p)renderEvidence(p);
+  if(p)renderOutreachPanel(p);
+  if(p)renderOfferPanel(p);
+  if(p)renderProspectNotes(p);
+  document.getElementById("prospectOverlay").classList.remove("hidden");
+}
+function closeProspectSheet(){document.getElementById("prospectOverlay").classList.add("hidden");currentProspectId=null;}
+document.getElementById("btnCloseSheet").addEventListener("click",closeProspectSheet);
+
+document.getElementById("pfState").addEventListener("change",function(){
+  toggleSentDateField();
+  if((this.value==="SENT")&&!document.getElementById("pfSentDate").value){
+    document.getElementById("pfSentDate").value=todayISO();
+  }
+});
+function toggleSentDateField(){
+  var st=document.getElementById("pfState").value;
+  document.getElementById("pfSentDateWrap").classList.toggle("hidden",!(st==="SENT"||st==="CONVERSATION"));
+}
+function renderFollowupActions(p){
+  var wrap=document.getElementById("followupActions");
+  wrap.innerHTML="";
+  if(!p){return;}
+  var fu=followupInfo(p);
+  if(fu&&fu.status!=="complete"){
+    var btn=document.createElement("button");
+    btn.className="pill";btn.type="button";
+    btn.textContent="Log "+fu.label+" sent";
+    btn.onclick=function(){
+      p.followupsSent=(p.followupsSent||0)+1;
+      p.lastContact=nowISO();
+      logActivity(p.id,"follow-up","");
+      saveState();openProspectSheet(p.id);toast("Follow-up logged");
+    };
+    wrap.appendChild(btn);
+  }
+  if(p.state!=="WON"&&p.state!=="LOST"){
+    var winBtn=document.createElement("button");
+    winBtn.className="pill";winBtn.type="button";winBtn.textContent="Mark WON";
+    winBtn.onclick=function(){openWon(p.id);};
+    wrap.appendChild(winBtn);
+    var loseBtn=document.createElement("button");
+    loseBtn.className="pill";loseBtn.type="button";loseBtn.textContent="Mark LOST";
+    loseBtn.onclick=function(){
+      p.state="LOST";p.outcome="LOST";logActivity(p.id,"lost","");
+      saveState();openProspectSheet(p.id);renderAll();toast("Marked LOST");
+    };
+    wrap.appendChild(loseBtn);
+    var nurtureBtn=document.createElement("button");
+    nurtureBtn.className="pill";nurtureBtn.type="button";nurtureBtn.textContent="Mark NURTURE (+30d)";
+    nurtureBtn.onclick=function(){
+      p.outcome="NURTURE";
+      p.nurtureReengageDate=addDays(todayISO(),30).toISOString();
+      saveState();openProspectSheet(p.id);renderAll();toast("Marked NURTURE");
+    };
+    wrap.appendChild(nurtureBtn);
+  }
+}
+
+document.getElementById("btnSaveProspect").addEventListener("click",function(){
+  var company=document.getElementById("pfCompany").value.trim();
+  if(!company){toast("Company name required");return;}
+  var p=currentProspectId?prospectById(currentProspectId):null;
+  if(!p){
+    if(STATE.prospects.length>=MAX_SLOTS){toast("Five slots are full — free one first");return;}
+    p={id:uid(),dateAdded:nowISO(),lastContact:"",sentDate:null,followupsSent:0,outcome:null,wonDetails:null,notes:[],calc:{mode:"missed"},evidence:[],topLeakId:null};
+    STATE.prospects.push(p);
+    currentProspectId=p.id;
+  }
+  p.company=company;
+  p.city=document.getElementById("pfCity").value.trim();
+  p.website=document.getElementById("pfWebsite").value.trim();
+  p.contact=document.getElementById("pfContact").value.trim();
+  p.phone=document.getElementById("pfPhone").value.trim();
+  p.email=document.getElementById("pfEmail").value.trim();
+  p.source=document.getElementById("pfSource").value.trim();
+  var why=document.getElementById("pfWhy").value.trim();
+  if(why&&!p.evidence.length){
+    var ev={id:uid(),issue:why,source:"",leakId:null,quality:"ESTIMATED",impact:0,priority:3,notes:"",ts:nowISO()};
+    p.evidence.push(ev);p.topLeakId=ev.id;
+  }
+  var newState=document.getElementById("pfState").value;
+  p.state=newState;
+  if((newState==="SENT"||newState==="CONVERSATION")&&!p.sentDate){
+    p.sentDate=document.getElementById("pfSentDate").value||todayISO();
+  }
+  if(newState==="WON"||newState==="LOST"||newState==="NURTURE"){p.outcome=newState;}
+  else{p.outcome=null;}
+  saveState();
+  toast("Saved");
+  renderAll();
+  openProspectSheet(p.id);
+});
+
+document.getElementById("btnDeleteProspect").addEventListener("click",function(){
+  if(!currentProspectId)return;
+  if(!confirm("Remove this prospect and free the slot? This cannot be undone."))return;
+  STATE.prospects=STATE.prospects.filter(function(p){return p.id!==currentProspectId;});
+  saveState();closeProspectSheet();renderAll();toast("Prospect removed");
+});
+
+/* ---------- sub-tabs ---------- */
+document.getElementById("sheetSubtabs").addEventListener("click",function(e){
+  var btn=e.target.closest(".subtab");if(!btn)return;setSubtab(btn.dataset.s);
+});
+function setSubtab(name){
+  document.querySelectorAll(".subtab").forEach(function(x){x.classList.toggle("active",x.dataset.s===name);});
+  document.querySelectorAll(".subpanel").forEach(function(x){x.classList.toggle("active",x.id==="s-"+name);});
+}
+
+/* ---------- calculator ---------- */
+var calcMode="missed";
+document.querySelectorAll("[data-calc]").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    calcMode=btn.getAttribute("data-calc");
+    document.querySelectorAll("[data-calc]").forEach(function(b){b.classList.toggle("on",b===btn);});
+    document.getElementById("calcMissed").classList.toggle("hidden",calcMode!=="missed");
+    document.getElementById("calcBooking").classList.toggle("hidden",calcMode!=="booking");
+    runCalc();
+  });
+});
+["cMissedInbound","cMissedPct","cMissedClose","cMissedTicket","cBookVisits","cBookNow","cBookTarget","cBookTicket","cQuality"].forEach(function(id){
+  document.getElementById(id).addEventListener("input",runCalc);
+  document.getElementById(id).addEventListener("change",runCalc);
+});
+function calcValue(){
+  if(calcMode==="missed"){
+    var inbound=+document.getElementById("cMissedInbound").value||0;
+    var pct=(+document.getElementById("cMissedPct").value||0)/100;
+    var close=(+document.getElementById("cMissedClose").value||0)/100;
+    var ticket=+document.getElementById("cMissedTicket").value||0;
+    var missed=inbound*pct;
+    return {value:missed*close*ticket,detail:missed.toFixed(1)+" missed calls/mo &times; "+(close*100).toFixed(0)+"% close &times; "+fmtMoney(ticket)};
+  }
+  var visits=+document.getElementById("cBookVisits").value||0;
+  var now=(+document.getElementById("cBookNow").value||0)/100;
+  var target=(+document.getElementById("cBookTarget").value||0)/100;
+  var ticket2=+document.getElementById("cBookTicket").value||0;
+  var extraBookings=Math.max(0,visits*(target-now));
+  return {value:extraBookings*ticket2,detail:extraBookings.toFixed(1)+" additional bookings/mo &times; "+fmtMoney(ticket2)};
+}
+function runCalc(){
+  var r=calcValue();
+  var q=document.getElementById("cQuality").value;
+  document.getElementById("calcQualityLabel").textContent=q==="KNOWN"?"known":(q==="BENCHMARK"?"benchmark-based":"estimated");
+  document.getElementById("calcResult").textContent=fmtMoney(r.value);
+  var prefix=q==="KNOWN"?"Based on owner-confirmed numbers: ":(q==="BENCHMARK"?"Industry-benchmark approximation: ":"Conservative estimate: ");
+  document.getElementById("calcSub").innerHTML=prefix+r.detail;
+}
+document.getElementById("btnAddEvidence").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  var r=calcValue();
+  var issue=document.getElementById("cIssue").value.trim()||"Revenue leak identified";
+  var source=document.getElementById("cSource").value.trim();
+  var leakId=document.getElementById("cLeakId").value;
+  var quality=document.getElementById("cQuality").value;
+  if(r.value<=0){toast("Enter calculator inputs before adding evidence");return;}
+  var ev={id:uid(),issue:issue,source:source,leakId:leakId,quality:quality,impact:Math.round(r.value),priority:3,notes:"",ts:nowISO()};
+  p.evidence=p.evidence||[];
+  p.evidence.push(ev);
+  if(!p.topLeakId||ev.impact>((topEvidence(p)||{}).impact||0)){p.topLeakId=ev.id;}
+  saveState();
+  document.getElementById("cIssue").value="";document.getElementById("cSource").value="";
+  renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();
+  toast("Evidence added");
+});
+function renderEvidence(p){
+  document.getElementById("evCount").textContent=(p.evidence||[]).length+" on file";
+  var list=document.getElementById("evList");
+  var sorted=evidenceSorted(p);
+  if(!sorted.length){list.innerHTML='<p class="note">No evidence yet.</p>';return;}
+  var top=topEvidence(p);
+  list.innerHTML=sorted.map(function(ev){
+    var leak=leakById(ev.leakId);
+    var isTop=top&&top.id===ev.id;
+    return '<div class="evrow'+(isTop?" toprow":"")+'" data-ev="'+ev.id+'">'+
+      '<div class="evtop"><span class="impact">'+fmtMoney(ev.impact)+"/mo</span>"+qualityBadge(ev.quality)+"</div>"+
+      "<div><b>"+esc(ev.issue)+"</b></div>"+
+      (ev.source?'<div class="note">'+esc(ev.source)+"</div>":"")+
+      (leak?'<div class="note">Leak: '+esc(leak.name)+"</div>":"")+
+      '<div class="row" style="margin-top:8px">'+
+        (isTop?'<span class="badge state">TOP LEAK</span>':'<button class="pill" data-pin="'+ev.id+'">Mark as top leak</button>')+
+        '<button class="pill" data-rmev="'+ev.id+'">Remove</button>'+
+      "</div></div>";
+  }).join("");
+  Array.prototype.forEach.call(list.querySelectorAll("[data-pin]"),function(el){
+    el.addEventListener("click",function(){p.topLeakId=el.getAttribute("data-pin");saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();});
+  });
+  Array.prototype.forEach.call(list.querySelectorAll("[data-rmev]"),function(el){
+    el.addEventListener("click",function(){
+      var id=el.getAttribute("data-rmev");
+      p.evidence=p.evidence.filter(function(e){return e.id!==id;});
+      if(p.topLeakId===id)p.topLeakId=null;
+      saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();
+    });
+  });
+}
+
+/* ---------- outreach generator ---------- */
+var pitchType="email";
+document.querySelectorAll(".ptype").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    pitchType=btn.getAttribute("data-t");
+    document.querySelectorAll(".ptype").forEach(function(b){b.classList.toggle("active",b===btn);});
+    var p=prospectById(currentProspectId);if(p)renderOutreachPanel(p);
+  });
+});
+function buildPitch(p,type){
+  var top=topEvidence(p);
+  if(!top)return null;
+  var biz=p.company||"[Business]";
+  var owner=p.contact||"there";
+  var leak=top.issue||"a revenue leak";
+  var ev=top.source||"observed directly";
+  var impact=top.impact?fmtMoney(top.impact)+"/month":"a meaningful monthly amount";
+  var hedge=top.quality==="KNOWN"?"":"roughly ";
+  var pitches={
+    email:"Subject: "+biz+" — one revenue leak I found\n\n"+owner+",\n\nI found one issue worth showing you: "+leak+".\n\nEvidence: "+ev+".\n\nUsing the assumptions in my breakdown, the opportunity is "+hedge+impact+". If you give me your actual numbers, I'll replace the estimates and recalculate it.\n\nMy first recommendation isn't a marketing package — it's one fix for the biggest leak I can validate. The fixed-fee option is $997.\n\nWorth 10 minutes to walk through the evidence?\n\n[YOUR NAME]",
+    call:owner+", I run Revenue Recovery Agency. I looked at "+biz+" and found one leak worth verifying with you: "+leak+". The evidence I have is "+ev+". I'm not calling to sell marketing — I size revenue leaks and fix the biggest one first. My estimate is "+hedge+impact+", but I'd rather use your real numbers. Got two minutes for how you handle this today?",
+    d4:"Subject: Re: "+biz+" revenue leak\n\n"+owner+", following up on the "+leak+" I found at "+biz+". The important part is the evidence: "+ev+". If my assumptions are wrong, send me the real numbers and I'll recalculate it. If the leak is real, the fix is a fixed $997. Worth a quick look?",
+    d11:"Subject: Closing the loop on "+biz+"\n\n"+owner+", last follow-up from me on this. I flagged "+leak+" because "+ev+". If it's already handled, I'll close this out. If not, I can show you the evidence and the single-fix $997 option in 10 minutes."
+  };
+  return pitches[type];
+}
+function renderOutreachPanel(p){
+  var text=buildPitch(p,pitchType);
+  document.getElementById("pitchOut").textContent=text||"Add evidence first, then generate outreach.";
+}
+document.getElementById("btnCopyPitch").addEventListener("click",function(){
+  var text=document.getElementById("pitchOut").textContent;
+  if(!text||text.indexOf("Add evidence")===0){toast("Nothing to copy yet");return;}
+  copyText(text);
+});
+
+/* ---------- $997 offer builder ---------- */
+function renderOfferPanel(p){
+  var out=document.getElementById("offerOut");
+  var top=topEvidence(p);
+  if(!top){
+    out.innerHTML='<div class="card"><p class="note"><b>Insufficient evidence for a proposal.</b> Add at least one validated evidence entry on the Evidence tab before building the $997 offer.</p></div>';
+    return;
+  }
+  var leak=leakById(top.leakId);
+  var action=leak?leak.action:"Implement the fix for the validated leak";
+  var qualityNote=top.quality==="KNOWN"?"This figure is based on owner-confirmed numbers.":(top.quality==="BENCHMARK"?"This figure is a conservative industry-benchmark approximation.":"This figure is a conservative estimate pending owner-confirmed numbers.");
+  out.innerHTML=
+    '<div class="card"><div class="head">Good — Fix the Biggest Leak</div>'+
+    '<div class="field"><label>Problem</label><div>'+esc(top.issue)+"</div></div>"+
+    (top.source?'<div class="field"><label>Evidence</label><div>'+esc(top.source)+"</div></div>":"")+
+    '<div class="field"><label>Estimated monthly impact</label><div style="font-size:22px;font-weight:800">'+fmtMoney(top.impact)+"/mo "+qualityBadge(top.quality)+'</div><div class="note">'+qualityNote+"</div></div>"+
+    '<div class="field"><label>Proposed fix</label><div>'+esc(action)+"</div></div>"+
+    '<div class="field"><label>Price</label><div style="font-size:22px;font-weight:800">$997 fixed fee</div></div>'+
+    '<div class="field"><label>Included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
+      "<li>Deep diagnosis of the top validated leak</li><li>Implementation of the single fix above</li><li>30-day measurement of recovered activity</li></ul></div>"+
+    '<div class="field"><label>Not included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
+      "<li>Secondary opportunities (see Better/Best)</li><li>Ongoing management or optimization</li><li>Revenue-share or performance guarantees — none exist at any tier</li></ul></div>"+
+    '<div class="field"><label>Next step</label><div>Reply to confirm and we start within 48 hours.</div></div>'+
+    "</div>"+
+    '<div class="card"><div class="head">Better / Best (if the owner wants broader scope)</div>'+
+    '<p class="note"><b>Better:</b> $5,000 setup + $2,500/month — implement the top 3 opportunities, 90-day roadmap.<br><b>Best:</b> $7,500/month — full ongoing revenue recovery management.</p></div>';
+}
+
+/* ---------- prospect notes ---------- */
+function renderProspectNotes(p){
+  var list=document.getElementById("pNoteList");
+  list.innerHTML=(p.notes||[]).map(function(n){
+    return '<div class="card"><div class="note">'+esc(new Date(n.ts).toLocaleString())+"</div><div>"+esc(n.text)+"</div></div>";
+  }).join("")||'<p class="note">No notes yet.</p>';
+}
+document.getElementById("btnSavePNote").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  var t=document.getElementById("pNoteText").value.trim();if(!t)return;
+  p.notes=p.notes||[];
+  p.notes.unshift({id:uid(),text:t,ts:nowISO()});
+  saveState();document.getElementById("pNoteText").value="";renderProspectNotes(p);toast("Note saved");
+});
+
+/* ---------- WON modal ---------- */
+function openWon(id){
+  currentProspectId=id;
+  document.getElementById("wonAmount").value=997;
+  document.getElementById("wonTier").value="good";
+  document.getElementById("wonOverlay").classList.remove("hidden");
+}
+document.getElementById("btnCloseWon").addEventListener("click",function(){document.getElementById("wonOverlay").classList.add("hidden");});
+document.getElementById("wonTier").addEventListener("change",function(){
+  var defaults={good:997,better:5000,best:7500};
+  document.getElementById("wonAmount").value=defaults[this.value]||997;
+});
+document.getElementById("btnConfirmWon").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  p.state="WON";p.outcome="WON";
+  p.wonDetails={tier:document.getElementById("wonTier").value,amount:+document.getElementById("wonAmount").value||0,date:nowISO()};
+  logActivity(p.id,"won","");
+  saveState();
+  document.getElementById("wonOverlay").classList.add("hidden");
+  renderAll();
+  if(!document.getElementById("prospectOverlay").classList.contains("hidden"))openProspectSheet(p.id);
+  toast("Marked WON — nice work");
+});
+
+/* ============ OBJECTIONS ============ */
+function renderObjections(){
+  document.getElementById("objList").innerHTML=OBJECTIONS.map(function(o,i){
+    return '<div class="obj"><button class="q" data-i="'+i+'">&ldquo;'+esc(o[0])+'&rdquo;</button><div class="ans" id="oans'+i+'"><p>'+esc(o[1])+'</p><button class="pill copybtn" data-copy="'+i+'">Copy response</button></div></div>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll(".obj .q"),function(btn){
+    btn.addEventListener("click",function(){
+      document.getElementById("oans"+btn.getAttribute("data-i")).classList.toggle("open");
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"),function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      copyText(OBJECTIONS[+btn.getAttribute("data-copy")][1]);
+    });
+  });
+}
+
+/* ============ ACTIVITY ============ */
+function fillProspectSelect(sel){
+  sel.innerHTML=STATE.prospects.map(function(p){return '<option value="'+p.id+'">'+esc(p.company)+"</option>";}).join("");
+}
+function logActivity(prospectId,type,note){
+  STATE.activities.push({id:uid(),prospectId:prospectId||null,prospectName:prospectId?(prospectById(prospectId)||{}).company:"",type:type,ts:nowISO(),note:note||""});
+}
+document.getElementById("btnLogActivity").addEventListener("click",function(){
+  var pid=document.getElementById("actProspect").value;
+  var type=document.getElementById("actType").value;
+  var note=document.getElementById("actNote").value.trim();
+  logActivity(pid,type,note);
+  saveState();
+  document.getElementById("actNote").value="";
+  renderActivity();renderHome();
+  toast("Logged");
+});
+function renderActivity(){
+  fillProspectSelect(document.getElementById("actProspect"));
+  var acts=STATE.activities.slice().reverse();
+  document.getElementById("activityCount").textContent=acts.length+" total";
+  var todayCount=acts.filter(function(a){return a.ts.slice(0,10)===todayISO();}).length;
+  document.getElementById("activityStats").innerHTML=
+    '<div class="stat"><strong>'+todayCount+'</strong><span>Today</span></div>'+
+    '<div class="stat"><strong>'+acts.length+'</strong><span>All time</span></div>'+
+    '<div class="stat"><strong>'+STATE.activities.filter(function(a){return a.type==="reply"||a.type==="conversation";}).length+'</strong><span>Replies+convos</span></div>'+
+    '<div class="stat"><strong>'+STATE.activities.filter(function(a){return a.type==="won";}).length+'</strong><span>Wins logged</span></div>';
+  var log=document.getElementById("activityLog");
+  log.innerHTML=acts.length?acts.slice(0,100).map(function(a){
+    var name=a.prospectId?((prospectById(a.prospectId)||{}).company||a.prospectName||"(removed prospect)"):(a.prospectName||"(general)");
+    return '<div class="queueitem"><span><b>'+esc(name)+"</b> &middot; "+esc(a.type)+(a.note?" &middot; "+esc(a.note):"")+'</span><span class="note">'+esc(new Date(a.ts).toLocaleDateString())+"</span></div>";
+  }).join(""):'<p class="note">No activity yet.</p>';
+}
+document.getElementById("btnExportCsv").addEventListener("click",function(){
+  var rows=[["Prospect","Type","Timestamp","Note"]].concat(STATE.activities.map(function(a){
+    var name=a.prospectId?((prospectById(a.prospectId)||{}).company||a.prospectName||""):(a.prospectName||"");
+    return [name,a.type,a.ts,a.note||""];
+  }));
+  var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(",");}).join("\n");
+  downloadFile("rra-sales-activity.csv",csv,"text/csv");
+});
+
+/* ============ NOTES ============ */
+document.getElementById("btnSaveGenNote").addEventListener("click",function(){
+  var t=document.getElementById("genNoteText").value.trim();if(!t)return;
+  STATE.generalNotes.unshift({id:uid(),text:t,ts:nowISO()});
+  saveState();document.getElementById("genNoteText").value="";renderGenNotes();toast("Note saved");
+});
+function renderGenNotes(){
+  document.getElementById("genNoteList").innerHTML=STATE.generalNotes.map(function(n){
+    return '<div class="card"><div class="note">'+esc(new Date(n.ts).toLocaleString())+"</div><div>"+esc(n.text)+"</div></div>";
+  }).join("")||'<p class="note">No general notes yet.</p>';
+}
+
+/* ============ LAUNCH / SCOREBOARD / DATA ============ */
+function renderLaunch(){
+  var total=STATE.prospects.length;
+  var contacted=STATE.prospects.filter(function(p){return !!p.sentDate;}).length;
+  var replies=STATE.activities.filter(function(a){return a.type==="reply";}).length;
+  var convos=STATE.activities.filter(function(a){return a.type==="conversation";}).length;
+  var proposals=STATE.activities.filter(function(a){return a.type==="proposal";}).length;
+  var wins=STATE.prospects.filter(function(p){return p.outcome==="WON";}).length;
+  var lost=STATE.prospects.filter(function(p){return p.outcome==="LOST";}).length;
+  var collected=STATE.prospects.reduce(function(s,p){return s+((p.wonDetails&&p.wonDetails.amount)||0);},0);
+  document.getElementById("scoreboardStats").innerHTML=[
+    ["Prospects",total+"/"+MAX_SLOTS],["Contacted",contacted+"/"+MAX_SLOTS],["Replies",replies],
+    ["Conversations",convos],["Proposals",proposals],["Wins",wins],["Lost",lost],["Collected",fmtMoney(collected)]
+  ].map(function(s){return '<div class="stat"><strong>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";}).join("");
+
+  var verdict;
+  if(total<MAX_SLOTS){verdict="Cohort not yet full ("+total+"/5). Select and add the remaining prospects before drawing conclusions.";}
+  else if(wins>=2){verdict="2 or more sold — treat this as validated. Move to delivery: fix the #1 leak, measure recovered revenue over 30 days, and use it as the first case study.";}
+  else if(wins===0&&convos>0){verdict="Zero sold but real conversations happened. Change one variable — targeting, evidence quality, wedge, price presentation, or proposal clarity — then run five more.";}
+  else if(wins===0&&replies===0&&contacted>=MAX_SLOTS){verdict="Zero replies across all five. Assume targeting/message/evidence failed to earn attention. Change targets or numbers rather than adding features.";}
+  else{verdict="Cycle in progress — results are not final until all five have been contacted and given time to respond.";}
+  document.getElementById("scoreboardVerdict").textContent=verdict;
+}
+
+function downloadFile(filename,content,mime){
+  var blob=new Blob([content],{type:mime});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+document.getElementById("btnExportJson").addEventListener("click",function(){
+  downloadFile("rra-data-"+todayISO()+".json",JSON.stringify(STATE,null,2),"application/json");
+  toast("Exported");
+});
+document.getElementById("btnImportJson").addEventListener("click",function(){document.getElementById("importFile").click();});
+document.getElementById("importFile").addEventListener("change",function(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    var parsed=safeParse(reader.result);
+    if(!parsed){toast("That file doesn't look like a valid RRA export");return;}
+    if(!confirm("Import will overwrite all current data on this device. Continue?"))return;
+    STATE=parsed;corrupted=false;saveState();renderAll();toast("Data imported");
+  };
+  reader.readAsText(file);
+  e.target.value="";
+});
+document.getElementById("btnResetTool").addEventListener("click",function(){
+  document.getElementById("resetConfirmInput").value="";
+  document.getElementById("resetOverlay").classList.remove("hidden");
+});
+document.getElementById("btnCloseReset").addEventListener("click",function(){document.getElementById("resetOverlay").classList.add("hidden");});
+document.getElementById("btnConfirmReset").addEventListener("click",function(){
+  if(document.getElementById("resetConfirmInput").value.trim()!=="RESET"){toast('Type "RESET" exactly to confirm');return;}
+  localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(BACKUP_KEY);
+  localStorage.removeItem("rra_leads");localStorage.removeItem("rra_activity");localStorage.removeItem("rra_notes");
+  STATE=defaultState();corrupted=false;saveState();
+  document.getElementById("resetOverlay").classList.add("hidden");
+  renderAll();toast("Tool reset");
+});
+
+/* ============ CALL MODE ============ */
+function openCallMode(){
+  if(!STATE.prospects.length){toast("Add a prospect first");return;}
+  var sel=document.getElementById("callProspectSelect");
+  fillProspectSelect(sel);
+  var keep=STATE.settings.callModeProspectId&&prospectById(STATE.settings.callModeProspectId);
+  sel.value=keep?STATE.settings.callModeProspectId:STATE.prospects[0].id;
+  renderCallBody();
+  document.getElementById("callWrap").classList.remove("hidden");
+}
+document.getElementById("btnCallMode").addEventListener("click",openCallMode);
+document.getElementById("btnExitCall").addEventListener("click",function(){document.getElementById("callWrap").classList.add("hidden");});
+document.getElementById("callProspectSelect").addEventListener("change",function(){
+  STATE.settings.callModeProspectId=this.value;saveState();renderCallBody();
+});
+function renderCallBody(){
+  var id=document.getElementById("callProspectSelect").value;
+  var p=prospectById(id);
+  var body=document.getElementById("callBody");
+  if(!p){body.innerHTML='<p class="note">No prospect selected.</p>';return;}
+  var top=topEvidence(p);
+  var action=prospectAction(p);
+  var opener=buildPitch(p,"call")||"No evidence yet — add at least one finding before calling.";
+  body.innerHTML=
+    '<div class="callco">'+esc(p.company)+"</div>"+
+    '<div style="color:#94a3b8;font-size:13px">'+esc(p.city||"")+(p.phone?" &middot; "+esc(p.phone):"")+"</div>"+
+    '<div class="callsection"><h4>Top leak</h4><div class="calltext">'+(top?esc(top.issue):"No validated evidence yet")+"</div></div>"+
+    (top?'<div class="callsection"><h4>Estimated impact</h4><div class="callimpact">'+fmtMoney(top.impact)+"/mo</div></div>":"")+
+    (top&&top.source?'<div class="callsection"><h4>Evidence</h4><div class="calltext">'+esc(top.source)+"</div></div>":"")+
+    '<div class="callsection"><h4>Call opener</h4><div class="calltext">'+esc(opener)+"</div></div>"+
+    '<div class="callsection"><h4>Discovery questions</h4>'+DISCOVERY_QUESTIONS.map(function(q){return '<div class="callq">'+esc(q)+"</div>";}).join("")+"</div>"+
+    '<div class="callsection"><h4>Objection responses</h4>'+OBJECTIONS.map(function(o){return '<details class="callobj"><summary>&ldquo;'+esc(o[0])+'&rdquo;</summary><p>'+esc(o[1])+"</p></details>";}).join("")+"</div>"+
+    '<div class="callsection"><h4>Next step</h4><div class="calltext">'+esc(action?action.text:"No action needed right now.")+"</div></div>";
+}
+
+/* ============ global render ============ */
+function renderAll(){
+  renderHome();
+  renderSlots();
+  renderObjections();
+  renderActivity();
+  renderGenNotes();
+  renderLaunch();
+}
+
+/* ---------- boot ---------- */
+STATE=loadState();
+if(!STATE.settings)STATE.settings={};
+saveState();
+renderAll();
+
+})();
+</script>
+</body>
+</html>
