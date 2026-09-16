@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib, json, os
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, Optional
 from rra_mvp.runner import run_workers_parallel
 from rra_mvp.scan import SCAN_WORKERS
 from rra_mvp.scoring import extract_signals_from_markdown, score_evidence

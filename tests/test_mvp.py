@@ -46,3 +46,33 @@ def test_propose_writes_internal_and_client_artifacts(tmp_path):
 
 def test_fallback_scan_rejects_non_http_url():
     with pytest.raises(ValueError,match="absolute http"): scan_public_url("file:///etc/passwd")
+
+@pytest.mark.parametrize("url", [
+    "http://127.0.0.1/",
+    "http://localhost/",
+    "http://169.254.169.254/latest/meta-data/",
+    "http://10.0.0.5/",
+    "http://172.16.0.1/",
+    "http://192.168.1.1/",
+    "http://[::1]/",
+    "http://0.0.0.0/",
+    "http://0x7f000001/",
+    "http://2130706433/",
+    "http://[::ffff:127.0.0.1]/",
+])
+def test_fallback_scan_blocks_ssrf_targets(url):
+    with pytest.raises(ValueError, match="non-public address|could not resolve"):
+        scan_public_url(url, timeout=2)
+
+def test_fallback_scan_redirect_to_private_ip_is_blocked(monkeypatch):
+    import rra_mvp.fallback_scan as fs
+    real_fetch_once = fs._fetch_once
+
+    def fake_fetch_once(url, timeout):
+        if url == "https://example-hvac.com/":
+            return 302, {"Location": "http://169.254.169.254/latest/meta-data/"}, b""
+        return real_fetch_once(url, timeout)
+
+    monkeypatch.setattr(fs, "_fetch_once", fake_fetch_once)
+    with pytest.raises(ValueError, match="non-public address"):
+        fs.scan_public_url("https://example-hvac.com/", timeout=2)
