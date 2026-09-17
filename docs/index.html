@@ -3,149 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>RRA Sales Cockpit</title>
+<meta name="theme-color" content="#0B0E14">
+<title>RRA Diagnostic Terminal</title>
+<!-- Placeholder favicon (brass monogram on obsidian). Replace with RRA_Monogram_Favicon.png when available. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B0E14'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='16' font-weight='700' fill='%23C5A059' text-anchor='middle'%3ERA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#111827;--ink2:#1f2937;--accent:#d97706;--accentL:#fbbf24;--paper:#f8fafc;--white:#fff;--muted:#64748b;--border:#e2e8f0;--green:#15803d;--greenBg:#dcfce7;--red:#b91c1c;--redBg:#fee2e2;--amberBg:#fffbeb;--blue:#1d4ed8;--r:12px}
+/* ============================================================
+   RRA BRAND TOKENS — Revenue Recovery Agency / Diagnostic Terminal
+   Single source of truth for color/type. Swap values here only;
+   nothing below this block should hard-code a brand color or font.
+   ============================================================ */
+:root{
+  /* -- surfaces -- */
+  --rra-obsidian:#0B0E14;
+  --rra-slate:#1E222B;
+  --rra-slate2:#262b36;
+  --rra-border:#3A3F4D;
+  /* -- ink -- */
+  --rra-bone:#F4F4F0;
+  --rra-white:#FFFFFF;
+  --rra-muted:#8A909A;
+  /* -- accent (primary brand) -- */
+  --rra-brass:#C5A059;
+  --rra-brass-bg:rgba(197,160,89,.12);
+  /* -- semantic: financial state only, never decorative -- */
+  --rra-green:#05B269;
+  --rra-green-bg:rgba(5,178,105,.12);
+  --rra-red:#E5484D;
+  --rra-red-text:#FF8489;
+  --rra-red-bg:rgba(229,72,77,.14);
+  --rra-amber:#F5A623;
+  --rra-amber-bg:rgba(245,166,35,.14);
+  /* -- type -- */
+  --font-display:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-heading:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Space Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  /* -- geometry: restrained, architectural, not consumer-app rounded -- */
+  --r:4px;
+  --r-lg:6px;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,Inter,system-ui,sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
-.shell{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:auto;background:var(--white);box-shadow:0 0 35px #0002;position:relative}
-button,input,select,textarea{font:inherit}
+body{font-family:var(--font-body);background:var(--rra-obsidian);color:var(--rra-bone);overflow-x:hidden}
+.shell{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:auto;background:var(--rra-obsidian);position:relative;border-inline:1px solid var(--rra-border)}
+button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-appearance:none}
 ::-webkit-scrollbar{width:0;height:0}
+::selection{background:var(--rra-brass);color:var(--rra-obsidian)}
 
-/* top bar */
-.top{background:var(--ink);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.logo{font-size:17px;font-weight:800;color:#fff}
-.logo b{color:var(--accentL)}
-.logo small{display:block;font-size:9px;color:#ffffff88;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:1px}
+/* financial figures: monospace, tabular, no invented precision */
+.mono,.money,#calcResult,#calcResultAnnual,.stat strong,.evrow .impact,.callimpact,.pcard .leak,.impact-lg{
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;
+}
+
+/* -- financial diagnostic result block (calculator output) -- */
+.diagresult{border:1px solid var(--rra-border);border-radius:var(--r);background:var(--rra-obsidian);padding:16px;margin-bottom:12px}
+.diagrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.diagrow-sub{margin-top:10px;padding-top:10px;border-top:1px solid var(--rra-border)}
+.diaglabel{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--rra-muted);font-weight:700}
+.diagqual{color:var(--rra-brass);font-family:var(--font-mono);text-transform:uppercase}
+.diagfigure{font-size:28px;font-weight:600;color:var(--rra-red-text)}
+.diagfigure-sm{font-size:17px}
+
+/* -- top bar / brand lockup -- */
+.top{background:var(--rra-obsidian);border-bottom:1px solid var(--rra-border);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+.lockup{display:flex;flex-direction:column;gap:2px}
+.lockup .mark{display:flex;align-items:baseline;gap:8px}
+.lockup .mark-img{height:22px;width:auto;display:block}
+.lockup .rra{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:.02em;color:var(--rra-bone)}
+.lockup .rra em{font-style:normal;color:var(--rra-brass)}
+.lockup .gap{display:inline-block;width:2px;height:14px;background:var(--rra-brass);margin:0 1px;transform:skewX(-12deg)}
+.lockup .full{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rra-muted);font-weight:600}
+.lockup .product{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rra-brass);font-weight:700;margin-top:3px}
+.lockup .meta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap}
+.lockup .meta span{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;color:var(--rra-muted);border:1px solid var(--rra-border);border-radius:var(--r);padding:2px 6px}
 .top .right{display:flex;gap:8px;align-items:center}
-.iconbtn{background:#ffffff14;border:1px solid #ffffff22;color:#fff;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:700;min-height:38px}
+.iconbtn{background:transparent;border:1px solid var(--rra-brass);color:var(--rra-brass);border-radius:var(--r);padding:9px 12px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;min-height:40px}
+.iconbtn:active{background:var(--rra-brass-bg)}
 
-/* tabs */
-.tabs{display:flex;overflow-x:auto;background:var(--ink2);flex-shrink:0;-webkit-overflow-scrolling:touch}
-.tab{min-width:64px;flex:1 0 auto;padding:12px 10px;border:0;border-bottom:3px solid transparent;background:none;color:#ffffffaa;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;min-height:46px}
-.tab.active{color:var(--accentL);border-bottom-color:var(--accentL)}
+/* -- tabs -- */
+.tabs{display:flex;overflow-x:auto;background:var(--rra-obsidian);border-bottom:1px solid var(--rra-border);flex-shrink:0;-webkit-overflow-scrolling:touch}
+.tab{min-width:64px;flex:1 0 auto;padding:12px 10px;border:0;border-bottom:2px solid transparent;background:none;color:var(--rra-muted);font-family:var(--font-heading);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;min-height:46px}
+.tab.active{color:var(--rra-brass);border-bottom-color:var(--rra-brass)}
 
-.panels{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.panels{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--rra-obsidian)}
 .panel{display:none;padding:14px 14px 90px}
 .panel.active{display:block}
 
-/* generic components */
-.card{border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;background:#fff}
-.head{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.head small{font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase}
+/* -- generic components -- */
+.card{border:1px solid var(--rra-border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;background:var(--rra-slate)}
+.head{font-family:var(--font-heading);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--rra-bone)}
+.head small{font-weight:600;color:var(--rra-muted);font-size:9.5px;text-transform:uppercase;font-family:var(--font-body);letter-spacing:.02em}
 .field{margin-bottom:12px}
-.field label{display:block;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.field input,.field select,.field textarea{width:100%;padding:12px 12px;border:1px solid var(--border);border-radius:9px;background:#f8fafc;color:var(--ink);min-height:44px}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--rra-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:12px 12px;border:1px solid var(--rra-border);border-radius:var(--r);background:var(--rra-obsidian);color:var(--rra-bone);min-height:44px}
+.field input::placeholder,.field textarea::placeholder{color:#565c68}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--rra-brass);outline-offset:-1px;border-color:var(--rra-brass)}
 .field textarea{min-height:70px;resize:vertical}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 @media(max-width:480px){.g2,.g3{grid-template-columns:1fr 1fr}}
-.btn{border:0;border-radius:9px;padding:13px 16px;font-weight:800;min-height:46px;font-size:13.5px}
+.btn{border:1px solid transparent;border-radius:var(--r);padding:13px 16px;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;min-height:46px;font-family:var(--font-heading)}
 .btn.block{width:100%;margin-top:8px}
-.primary{background:var(--ink);color:#fff}
-.accentbtn{background:var(--accent);color:#fff}
-.outline{background:#fff;color:var(--ink);border:1px solid var(--border)}
-.danger{background:#fff;color:var(--red);border:1px solid #fecaca}
-.ghost{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+.primary{background:var(--rra-bone);color:var(--rra-obsidian)}
+.accentbtn{background:var(--rra-brass);color:var(--rra-obsidian)}
+.outline{background:transparent;color:var(--rra-bone);border-color:var(--rra-border)}
+.danger{background:transparent;color:var(--rra-red-text);border-color:var(--rra-red)}
+.ghost{background:transparent;color:var(--rra-muted);border:1px dashed var(--rra-border)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-.pill{border:1px solid var(--border);background:#fff;border-radius:20px;padding:9px 13px;font-weight:700;font-size:11.5px;min-height:38px}
-.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.badge{font-size:9.5px;font-weight:800;padding:4px 8px;border-radius:20px;background:#e2e8f0;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
-.badge.known{background:var(--greenBg);color:var(--green)}
-.badge.estimated{background:var(--amberBg);color:var(--accent)}
-.badge.benchmark{background:#e0e7ff;color:#4338ca}
-.badge.state{background:var(--ink);color:#fff}
-.badge.won{background:var(--greenBg);color:var(--green)}
-.badge.lost{background:var(--redBg);color:var(--red)}
-.badge.overdue{background:var(--redBg);color:var(--red)}
-.badge.today{background:var(--amberBg);color:var(--accent)}
-.note{font-size:12px;color:var(--muted);line-height:1.55}
+.pill{border:1px solid var(--rra-border);background:transparent;color:var(--rra-bone);border-radius:var(--r);padding:9px 13px;font-weight:600;font-size:11.5px;min-height:38px}
+.pill.on{background:var(--rra-brass);color:var(--rra-obsidian);border-color:var(--rra-brass)}
+.badge{font-family:var(--font-mono);font-size:9.5px;font-weight:600;padding:4px 8px;border-radius:var(--r);background:var(--rra-slate2);border:1px solid var(--rra-border);color:var(--rra-muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge.known{background:var(--rra-brass-bg);color:var(--rra-brass);border-color:var(--rra-brass)}
+.badge.estimated{background:var(--rra-slate2);color:var(--rra-bone);border-color:var(--rra-border)}
+.badge.benchmark{background:var(--rra-slate2);color:var(--rra-muted);border-color:var(--rra-border);border-style:dashed}
+.badge.state{background:var(--rra-slate2);color:var(--rra-bone);border-color:var(--rra-border)}
+.badge.won{background:var(--rra-green-bg);color:var(--rra-green);border-color:var(--rra-green)}
+.badge.lost{background:var(--rra-red-bg);color:var(--rra-red-text);border-color:var(--rra-red)}
+.badge.overdue{background:var(--rra-red-bg);color:var(--rra-red-text);border-color:var(--rra-red)}
+.badge.today{background:var(--rra-amber-bg);color:var(--rra-amber);border-color:var(--rra-amber)}
+.note{font-size:12px;color:var(--rra-muted);line-height:1.55}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
-.stat{background:#f1f5f9;border:1px solid var(--border);border-radius:9px;padding:11px 5px;text-align:center}
-.stat strong{display:block;font-size:20px;line-height:1.1}
-.stat span{font-size:8.5px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.stat{background:var(--rra-slate);border:1px solid var(--rra-border);border-radius:var(--r);padding:11px 5px;text-align:center}
+.stat strong{display:block;font-size:19px;line-height:1.15;color:var(--rra-bone);font-weight:600}
+.stat span{font-size:8px;color:var(--rra-muted);text-transform:uppercase;font-weight:700;letter-spacing:.03em;font-family:var(--font-body)}
 .hidden{display:none !important}
 .copybtn{font-size:11px;padding:8px 12px;min-height:36px}
 
-/* home / next action */
-.nextaction{background:linear-gradient(135deg,var(--ink),#312e13 180%);color:#fff;border-radius:14px;padding:20px;margin-bottom:14px}
-.nextaction small{color:#ffffff99;text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:800}
-.nextaction .txt{font-size:19px;font-weight:800;margin:8px 0 12px;line-height:1.3}
-.queue{border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.queueitem{padding:11px 13px;border-bottom:1px solid var(--border);font-size:12.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+/* -- home / next action: dominant, restrained (no glow/gradient) -- */
+.nextaction{background:var(--rra-slate);border:1px solid var(--rra-border);border-left:3px solid var(--rra-brass);border-radius:var(--r-lg);padding:20px;margin-bottom:14px}
+.nextaction small{color:var(--rra-brass);text-transform:uppercase;letter-spacing:.14em;font-size:10px;font-weight:700;font-family:var(--font-heading)}
+.nextaction .txt{font-family:var(--font-display);font-size:19px;font-weight:600;margin:10px 0 14px;line-height:1.35;color:var(--rra-bone)}
+.queue{border:1px solid var(--rra-border);border-radius:var(--r);overflow:hidden}
+.queueitem{padding:11px 13px;border-bottom:1px solid var(--rra-border);font-size:12.5px;display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--rra-bone)}
 .queueitem:last-child{border-bottom:0}
 
-/* prospect board */
+/* -- prospect board -- */
 .slotgrid{display:grid;grid-template-columns:1fr;gap:10px}
-.pcard{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;width:100%;text-align:left}
-.pcard.empty{display:flex;align-items:center;justify-content:center;min-height:76px;border-style:dashed;color:var(--muted);font-weight:800;font-size:13px;background:#f8fafc}
+.pcard{border:1px solid var(--rra-border);border-radius:var(--r-lg);padding:14px;background:var(--rra-slate);width:100%;text-align:left}
+.pcard.empty{display:flex;align-items:center;justify-content:center;min-height:76px;border-style:dashed;color:var(--rra-muted);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:transparent;font-family:var(--font-heading)}
 .pcard .top2{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.pcard .co{font-size:16px;font-weight:800}
-.pcard .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
-.pcard .leak{margin-top:9px;font-size:12px;background:#f8fafc;border-radius:8px;padding:9px 10px}
-.pcard .followrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px}
+.pcard .co{font-family:var(--font-heading);font-size:15px;font-weight:700;color:var(--rra-bone)}
+.pcard .sub{font-size:11.5px;color:var(--rra-muted);margin-top:2px}
+.pcard .leak{margin-top:9px;font-size:12px;background:var(--rra-obsidian);border:1px solid var(--rra-border);border-radius:var(--r);padding:9px 10px;color:var(--rra-red-text)}
+.pcard .leak b{font-family:var(--font-body);color:var(--rra-bone);font-weight:600;display:block;margin-bottom:3px}
+.pcard .followrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--rra-bone)}
 
-/* modal / detail */
-.overlay{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;justify-content:center;z-index:50}
+/* -- modal / detail -- */
+.overlay{position:fixed;inset:0;background:rgba(11,14,20,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
 .overlay.center{align-items:center;padding:14px}
-.sheet{background:#fff;width:100%;max-width:900px;max-height:92vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden}
-.overlay.center .sheet{border-radius:16px;max-height:88vh}
-.sheethead{padding:calc(12px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.sheethead .ttl{font-size:16px;font-weight:800}
+.sheet{background:var(--rra-obsidian);width:100%;max-width:900px;max-height:92vh;border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--rra-border);border-bottom:0;display:flex;flex-direction:column;overflow:hidden}
+.overlay.center .sheet{border-radius:var(--r-lg);border-bottom:1px solid var(--rra-border);max-height:88vh}
+.sheethead{padding:calc(12px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--rra-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.sheethead .ttl{font-family:var(--font-heading);font-size:16px;font-weight:700;color:var(--rra-bone)}
 .sheetbody{overflow-y:auto;padding:14px 16px calc(24px + env(safe-area-inset-bottom))}
-.subtabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0}
-.subtab{padding:12px 12px;border:0;background:none;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;min-height:44px}
-.subtab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.subtabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--rra-border);flex-shrink:0}
+.subtab{padding:12px 12px;border:0;background:none;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--rra-muted);border-bottom:2px solid transparent;white-space:nowrap;min-height:44px;font-family:var(--font-heading)}
+.subtab.active{color:var(--rra-brass);border-bottom-color:var(--rra-brass)}
 .subpanel{display:none}
 .subpanel.active{display:block}
-.closeicon{background:#f1f5f9;border:0;border-radius:50%;width:36px;height:36px;font-size:16px;font-weight:800;color:var(--muted)}
+.closeicon{background:transparent;border:1px solid var(--rra-border);border-radius:var(--r);width:36px;height:36px;font-size:16px;font-weight:700;color:var(--rra-muted)}
 
-.evrow{border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
+.evrow{border:1px solid var(--rra-border);border-radius:var(--r);padding:11px;margin-bottom:8px;background:var(--rra-slate)}
 .evrow .evtop{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
-.evrow .impact{font-weight:800;font-size:15px}
-.toprow{background:var(--amberBg);border-color:#fde68a}
+.evrow .impact{font-weight:600;font-size:15px;color:var(--rra-red-text)}
+.evrow b{color:var(--rra-bone)}
+.toprow{border-color:var(--rra-brass);border-left:3px solid var(--rra-brass)}
 
-.pitchbox{white-space:pre-wrap;background:var(--ink);color:#ffffffe8;padding:16px;border-radius:10px;line-height:1.6;font-size:13px;margin:10px 0}
+.pitchbox{white-space:pre-wrap;background:var(--rra-slate);border:1px solid var(--rra-border);color:var(--rra-bone);padding:16px;border-radius:var(--r);line-height:1.6;font-size:13px;font-family:var(--font-mono);margin:10px 0}
 .pitchtypes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
-.ptype{padding:10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:11.5px;font-weight:700;min-height:42px}
-.ptype.active{background:var(--ink);color:#fff}
+.ptype{padding:10px;border:1px solid var(--rra-border);border-radius:var(--r);background:transparent;color:var(--rra-bone);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;min-height:42px;font-family:var(--font-heading)}
+.ptype.active{background:var(--rra-brass);color:var(--rra-obsidian);border-color:var(--rra-brass)}
 
-.obj{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
-.obj button.q{width:100%;border:0;background:#fff;padding:13px;text-align:left;font-weight:700;min-height:46px;font-size:13px}
-.obj .ans{display:none;padding:13px;border-top:1px solid var(--border);font-size:12.5px;line-height:1.55;color:#475569;background:#f8fafc}
+.obj{border:1px solid var(--rra-border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;background:var(--rra-slate)}
+.obj button.q{width:100%;border:0;background:transparent;color:var(--rra-bone);padding:13px;text-align:left;font-weight:600;min-height:46px;font-size:13px}
+.obj .ans{display:none;padding:13px;border-top:1px solid var(--rra-border);font-size:12.5px;line-height:1.55;color:var(--rra-muted);background:var(--rra-obsidian)}
 .obj .ans.open{display:block}
+.obj .ans p{color:var(--rra-bone)}
 
-/* call mode */
-.callwrap{position:fixed;inset:0;background:var(--ink);z-index:60;display:flex;flex-direction:column;color:#fff}
-.callhead{padding:calc(14px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff22}
+/* -- call mode: maximum readability, brand-consistent -- */
+.callwrap{position:fixed;inset:0;background:var(--rra-obsidian);z-index:60;display:flex;flex-direction:column;color:var(--rra-bone)}
+.callhead{padding:calc(14px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--rra-border)}
 .callbody{flex:1;overflow-y:auto;padding:16px 16px calc(30px + env(safe-area-inset-bottom))}
-.callco{font-size:26px;font-weight:900;margin-bottom:2px}
+.callco{font-family:var(--font-display);font-size:25px;font-weight:600;margin-bottom:2px;color:var(--rra-bone)}
 .callsection{margin-top:18px}
-.callsection h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#f59e0b;margin-bottom:8px;font-weight:800}
-.callimpact{font-size:34px;font-weight:900;color:#fbbf24}
-.calltext{background:#ffffff12;border-radius:10px;padding:14px;font-size:14px;line-height:1.6}
-.callq{padding:9px 0;border-bottom:1px solid #ffffff18;font-size:14px}
+.callsection h4{font-family:var(--font-heading);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--rra-brass);margin-bottom:8px;font-weight:700}
+.callimpact{font-size:32px;font-weight:600;color:var(--rra-red-text)}
+.calltext{background:var(--rra-slate);border:1px solid var(--rra-border);border-radius:var(--r);padding:14px;font-size:14px;line-height:1.6}
+.callq{padding:9px 0;border-bottom:1px solid var(--rra-border);font-size:14px}
 .callq:last-child{border-bottom:0}
-.callobj summary{cursor:pointer;font-weight:700;padding:9px 0;font-size:13.5px}
-.callobj p{font-size:12.5px;color:#e2e8f0;padding-bottom:9px;line-height:1.5}
+.callobj summary{cursor:pointer;font-weight:600;padding:9px 0;font-size:13.5px;color:var(--rra-bone)}
+.callobj p{font-size:12.5px;color:var(--rra-muted);padding-bottom:9px;line-height:1.5}
 
-/* toast */
-.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:30px;font-size:12.5px;font-weight:700;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+/* -- toast -- */
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--rra-bone);color:var(--rra-obsidian);padding:11px 18px;border-radius:var(--r);font-size:12.5px;font-weight:700;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 
-.banner{background:var(--redBg);color:var(--red);padding:11px 14px;border-radius:9px;font-size:12px;font-weight:700;margin-bottom:12px}
-.launchstep{border-left:3px solid var(--accent);padding:10px 12px;margin:9px 0;background:var(--amberBg);border-radius:0 8px 8px 0}
-.known{color:var(--green);font-weight:800}
-.assumed{color:var(--accent);font-weight:800}
+.banner{background:var(--rra-red-bg);border:1px solid var(--rra-red);color:var(--rra-red-text);padding:11px 14px;border-radius:var(--r);font-size:12px;font-weight:600;margin-bottom:12px}
+.launchstep{border-left:3px solid var(--rra-brass);padding:10px 12px;margin:9px 0;background:var(--rra-obsidian);border:1px solid var(--rra-border);border-left:3px solid var(--rra-brass);border-radius:0 var(--r) var(--r) 0}
+.launchstep b{color:var(--rra-bone)}
+.known{color:var(--rra-brass);font-weight:700}
+.assumed{color:var(--rra-brass);font-weight:700}
 </style>
 </head>
 <body>
 <div class="shell" id="app">
 
   <div class="top">
-    <div class="logo"><b>RRA</b> Sales Cockpit<small>Revenue Recovery Agency &middot; Launch Build</small></div>
+    <!-- Typographic placeholder lockup (Concept A — Bracket Gap), not final brand art.
+         Swap-in point for approved SVGs: replace .mark's contents with
+         <img src="RRA_Logo_Primary_DarkBG.svg" alt="RRA" class="mark-img"> —
+         no other header markup needs to change. -->
+    <div class="lockup">
+      <div class="mark"><span class="rra">RR<span class="gap" aria-hidden="true"></span>A</span></div>
+      <span class="full">Revenue Recovery Agency</span>
+      <span class="product">Diagnostic Terminal</span>
+      <div class="meta">
+        <span>Residential HVAC</span>
+        <span>Cohort 01</span>
+        <span>5-Prospect Validation</span>
+      </div>
+    </div>
     <div class="right">
       <button class="iconbtn" id="btnCallMode">Call Mode</button>
     </div>
@@ -171,11 +255,11 @@ button{cursor:pointer;-webkit-appearance:none}
         <button class="btn accentbtn" id="heroGo">Open</button>
       </div>
       <div class="card">
-        <div class="head">Also due<small id="queueCount"></small></div>
+        <div class="head">Priority Queue<small id="queueCount"></small></div>
         <div class="queue" id="queueList"></div>
       </div>
       <div class="card">
-        <div class="head">Launch snapshot</div>
+        <div class="head">Launch Metrics</div>
         <div class="stats" id="homeStats"></div>
         <p class="note">This tracks the first-five commercial validation cycle. It shows what happened — it does not decide whether RRA works.</p>
       </div>
@@ -184,7 +268,7 @@ button{cursor:pointer;-webkit-appearance:none}
     <!-- PROSPECTS -->
     <section class="panel" id="p-prospects">
       <div class="card">
-        <div class="head">Five-prospect launch board<small id="slotCount"></small></div>
+        <div class="head">Launch Cohort — Five Prospects<small id="slotCount"></small></div>
         <p class="note">Exactly five HVAC targets for this validation cycle. Replace a LOST slot rather than exceeding five.</p>
       </div>
       <div class="slotgrid" id="slotGrid"></div>
@@ -193,7 +277,7 @@ button{cursor:pointer;-webkit-appearance:none}
     <!-- OBJECTIONS -->
     <section class="panel" id="p-objections">
       <div class="card">
-        <div class="head">RRA objection handling</div>
+        <div class="head">Objection Responses</div>
         <p class="note">Never promise guaranteed recovered revenue. Lead with evidence, economics, and the fixed-fee single wedge.</p>
       </div>
       <div id="objList"></div>
@@ -203,7 +287,7 @@ button{cursor:pointer;-webkit-appearance:none}
     <section class="panel" id="p-activity">
       <div class="stats" id="activityStats"></div>
       <div class="card">
-        <div class="head">Log activity</div>
+        <div class="head">Log Activity</div>
         <div class="field"><label>Prospect</label><select id="actProspect"></select></div>
         <div class="field"><label>Type</label>
           <select id="actType">
@@ -224,7 +308,7 @@ button{cursor:pointer;-webkit-appearance:none}
         <button class="btn primary block" id="btnLogActivity">Log activity</button>
       </div>
       <div class="card">
-        <div class="head">Activity log<small id="activityCount"></small></div>
+        <div class="head">Activity Log<small id="activityCount"></small></div>
         <div id="activityLog"></div>
         <button class="btn outline block" id="btnExportCsv">Export CSV</button>
       </div>
@@ -233,7 +317,7 @@ button{cursor:pointer;-webkit-appearance:none}
     <!-- NOTES -->
     <section class="panel" id="p-notes">
       <div class="card">
-        <div class="head">Founder notes</div>
+        <div class="head">Founder Notes</div>
         <p class="note">General notes not tied to a single prospect. Per-prospect notes live on each prospect card.</p>
         <div class="field"><textarea id="genNoteText" rows="4" placeholder="Objection patterns, offer feedback, targeting ideas..."></textarea></div>
         <button class="btn primary block" id="btnSaveGenNote">Save note</button>
@@ -244,12 +328,12 @@ button{cursor:pointer;-webkit-appearance:none}
     <!-- LAUNCH -->
     <section class="panel" id="p-launch">
       <div class="card">
-        <div class="head">First-five scoreboard</div>
+        <div class="head">First-Five Scoreboard</div>
         <div class="stats" id="scoreboardStats"></div>
         <p class="note" id="scoreboardVerdict"></p>
       </div>
       <div class="card">
-        <div class="head">RRA first-five launch protocol</div>
+        <div class="head">Launch Protocol</div>
         <div class="launchstep"><b>1. Select exactly five HVAC targets.</b><br><span class="note">Residential, owner-operated, 2-15 techs. No franchises, agencies, commercial-only shops, or firms with full-time marketing staff.</span></div>
         <div class="launchstep"><b>2. Audit each target.</b><br><span class="note">Run the RRA audit, then manually verify the top revenue leak.</span></div>
         <div class="launchstep"><b>3. Do the 20-minute truth pass.</b><br><span class="note">Reviews, mobile call/booking path, after-hours handling, service promise. Upgrade assumptions to <span class="known">KNOWN</span> wherever possible.</span></div>
@@ -258,11 +342,11 @@ button{cursor:pointer;-webkit-appearance:none}
         <div class="launchstep"><b>6. Read the market.</b><br><span class="note">2-3 sales: deliver and measure. Zero sales with conversations: change one variable. Zero replies: change target/message/evidence, not product architecture.</span></div>
       </div>
       <div class="card">
-        <div class="head">Launch freeze</div>
+        <div class="head">Launch Freeze</div>
         <p class="note">No dashboard, CRM integration, billing system, second vertical, autonomous execution, orchestrator expansion, architecture refactor, or paid lead stack before the first-five cycle produces evidence.</p>
       </div>
       <div class="card">
-        <div class="head">Data</div>
+        <div class="head">Data Management</div>
         <div class="row">
           <button class="btn outline" id="btnExportJson">Export RRA data</button>
           <button class="btn outline" id="btnImportJson">Import RRA data</button>
@@ -286,7 +370,7 @@ button{cursor:pointer;-webkit-appearance:none}
       <button class="subtab active" data-s="overview">Overview</button>
       <button class="subtab" data-s="evidence">Evidence</button>
       <button class="subtab" data-s="outreach">Outreach</button>
-      <button class="subtab" data-s="offer">$997 Offer</button>
+      <button class="subtab" data-s="offer">Implementation</button>
       <button class="subtab" data-s="pnotes">Notes</button>
     </div>
     <div class="sheetbody">
@@ -327,7 +411,7 @@ button{cursor:pointer;-webkit-appearance:none}
 
       <div class="subpanel" id="s-evidence">
         <div class="card">
-          <div class="head">Revenue leak calculator</div>
+          <div class="head">Revenue Leakage Diagnostic</div>
           <div class="row" style="margin-bottom:10px">
             <button class="pill on" data-calc="missed">Missed-call leak</button>
             <button class="pill" data-calc="booking">Booking-friction leak</button>
@@ -351,21 +435,27 @@ button{cursor:pointer;-webkit-appearance:none}
           <div class="field"><label>Input quality</label>
             <select id="cQuality"><option>KNOWN</option><option selected>ESTIMATED</option><option>BENCHMARK</option></select>
           </div>
-          <div class="stat" style="text-align:left;padding:14px">
-            <span>Monthly opportunity (<span id="calcQualityLabel">estimated</span>)</span>
-            <strong id="calcResult" style="font-size:28px">$0</strong>
+          <div class="diagresult">
+            <div class="diagrow">
+              <span class="diaglabel">Monthly Leakage <span id="calcQualityLabel" class="diagqual">estimated</span></span>
+              <strong id="calcResult" class="diagfigure">$0</strong>
+            </div>
+            <div class="diagrow diagrow-sub">
+              <span class="diaglabel">Annual Leakage</span>
+              <strong id="calcResultAnnual" class="diagfigure diagfigure-sm">$0</strong>
+            </div>
             <div class="note" id="calcSub"></div>
           </div>
-          <p class="note">This is an opportunity estimate, not a promise of recovered revenue. Replace estimates with owner-provided or directly observed numbers before sending a proposal.</p>
+          <p class="note">This is a modeled opportunity, not a promise of recovered revenue. Replace estimates with owner-provided or directly observed numbers before sending a proposal.</p>
           <div class="field"><label>Associated RRA HVAC leak</label><select id="cLeakId"></select></div>
           <div class="field"><label>Observed issue</label><input id="cIssue" placeholder="After-hours calls ring to voicemail"></div>
           <div class="field"><label>Evidence / source</label><input id="cSource" placeholder="Called Tuesday 6:45pm; no live response"></div>
           <button class="btn accentbtn block" id="btnAddEvidence">Add as evidence</button>
         </div>
         <div class="card">
-          <div class="head">Evidence on file<small id="evCount"></small></div>
+          <div class="head">Validated Evidence<small id="evCount"></small></div>
           <div id="evList"></div>
-          <p class="note">The top validated opportunity below drives the $997 Good offer.</p>
+          <p class="note">The top validated opportunity below drives the $997 fixed-fee implementation.</p>
         </div>
       </div>
 
@@ -725,8 +815,9 @@ function renderHome(){
     ["Won",wins]
   ];
   document.getElementById("homeStats").innerHTML=stats.map(function(s){
-    return '<div class="stat"><strong>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
-  }).join("")+'<div class="stat" style="grid-column:span 4"><strong>'+fmtMoney(collected)+'</strong><span>Collected revenue</span></div>';
+    var isWon=s[0]==="Won";
+    return '<div class="stat"><strong'+(isWon&&s[1]?' style="color:var(--rra-green)"':"")+'>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
+  }).join("")+'<div class="stat" style="grid-column:span 4"><strong style="color:var(--rra-green)">'+fmtMoney(collected)+'</strong><span>Collected Revenue</span></div>';
 
   var banner=document.getElementById("corruptBanner");
   banner.innerHTML=corrupted?'<div class="banner">Local data on this device was corrupted and has been reset (a backup copy was used if one existed). If you have an exported JSON backup, use Launch &rarr; Import RRA data to restore it.</div>':"";
@@ -746,9 +837,10 @@ function renderSlots(){
     var top=topEvidence(p);
     var fu=followupInfo(p);
     var stateBadge='<span class="badge state">'+esc(p.state)+"</span>";
+    if(p.state==="CONVERSATION")stateBadge='<span class="badge known">'+esc(p.state)+"</span>";
     if(p.outcome==="WON")stateBadge='<span class="badge won">WON</span>';
     if(p.outcome==="LOST")stateBadge='<span class="badge lost">LOST</span>';
-    var leakHtml=top?('<div class="leak"><b>'+esc(top.issue||"Top leak")+"</b><br>"+fmtMoney(top.impact)+"/mo &middot; "+qualityBadge(top.quality)+"</div>"):'<div class="leak note">No evidence yet — run a scan and add findings.</div>';
+    var leakHtml=top?('<div class="leak"><b>'+esc(top.issue||"Top leak")+"</b><br>"+fmtMoney(top.impact)+"/mo &middot; "+fmtMoney(top.impact*12)+"/yr &middot; "+qualityBadge(top.quality)+"</div>"):'<div class="leak note">No evidence yet — run a scan and add findings.</div>';
     var followHtml="";
     if(fu&&fu.status!=="complete"){
       var cls=fu.status==="overdue"?"overdue":(fu.status==="today"?"today":"");
@@ -793,6 +885,7 @@ function openProspectSheet(id){
   leakSel.innerHTML=LEAK_LIBRARY.map(function(l){return '<option value="'+l.id+'">'+esc(l.name)+"</option>";}).join("");
   setSubtab("overview");
   document.getElementById("calcResult").textContent="$0";
+  document.getElementById("calcResultAnnual").textContent="$0";
   document.getElementById("calcSub").textContent="";
   if(p)renderEvidence(p);
   if(p)renderOutreachPanel(p);
@@ -940,6 +1033,7 @@ function runCalc(){
   var q=document.getElementById("cQuality").value;
   document.getElementById("calcQualityLabel").textContent=q==="KNOWN"?"known":(q==="BENCHMARK"?"benchmark-based":"estimated");
   document.getElementById("calcResult").textContent=fmtMoney(r.value);
+  document.getElementById("calcResultAnnual").textContent=fmtMoney(r.value*12);
   var prefix=q==="KNOWN"?"Based on owner-confirmed numbers: ":(q==="BENCHMARK"?"Industry-benchmark approximation: ":"Conservative estimate: ");
   document.getElementById("calcSub").innerHTML=prefix+r.detail;
 }
@@ -971,11 +1065,12 @@ function renderEvidence(p){
     var isTop=top&&top.id===ev.id;
     return '<div class="evrow'+(isTop?" toprow":"")+'" data-ev="'+ev.id+'">'+
       '<div class="evtop"><span class="impact">'+fmtMoney(ev.impact)+"/mo</span>"+qualityBadge(ev.quality)+"</div>"+
+      '<div class="note" style="margin-bottom:4px">Annual: '+fmtMoney(ev.impact*12)+"</div>"+
       "<div><b>"+esc(ev.issue)+"</b></div>"+
       (ev.source?'<div class="note">'+esc(ev.source)+"</div>":"")+
       (leak?'<div class="note">Leak: '+esc(leak.name)+"</div>":"")+
       '<div class="row" style="margin-top:8px">'+
-        (isTop?'<span class="badge state">TOP LEAK</span>':'<button class="pill" data-pin="'+ev.id+'">Mark as top leak</button>')+
+        (isTop?'<span class="badge known">TOP LEAK</span>':'<button class="pill" data-pin="'+ev.id+'">Mark as top leak</button>')+
         '<button class="pill" data-rmev="'+ev.id+'">Remove</button>'+
       "</div></div>";
   }).join("");
@@ -1040,19 +1135,24 @@ function renderOfferPanel(p){
   var action=leak?leak.action:"Implement the fix for the validated leak";
   var qualityNote=top.quality==="KNOWN"?"This figure is based on owner-confirmed numbers.":(top.quality==="BENCHMARK"?"This figure is a conservative industry-benchmark approximation.":"This figure is a conservative estimate pending owner-confirmed numbers.");
   out.innerHTML=
-    '<div class="card"><div class="head">Good — Fix the Biggest Leak</div>'+
-    '<div class="field"><label>Problem</label><div>'+esc(top.issue)+"</div></div>"+
+    '<div class="card"><div class="head">Deploy $997 Implementation</div>'+
+    '<div class="field"><label>Top Revenue Leak</label><div>'+esc(top.issue)+"</div></div>"+
     (top.source?'<div class="field"><label>Evidence</label><div>'+esc(top.source)+"</div></div>":"")+
-    '<div class="field"><label>Estimated monthly impact</label><div style="font-size:22px;font-weight:800">'+fmtMoney(top.impact)+"/mo "+qualityBadge(top.quality)+'</div><div class="note">'+qualityNote+"</div></div>"+
-    '<div class="field"><label>Proposed fix</label><div>'+esc(action)+"</div></div>"+
-    '<div class="field"><label>Price</label><div style="font-size:22px;font-weight:800">$997 fixed fee</div></div>'+
+    '<div class="field"><label>Financial Impact</label>'+
+      '<div class="diagresult" style="padding:12px;margin-bottom:0">'+
+        '<div class="diagrow"><span class="diaglabel">Monthly Leakage</span><strong class="diagfigure" style="font-size:20px">'+fmtMoney(top.impact)+'</strong></div>'+
+        '<div class="diagrow diagrow-sub"><span class="diaglabel">Annual Leakage</span><strong class="diagfigure diagfigure-sm">'+fmtMoney(top.impact*12)+"</strong></div>"+
+      "</div>"+
+      '<div class="row" style="margin-top:8px">'+qualityBadge(top.quality)+'</div><div class="note" style="margin-top:6px">'+qualityNote+"</div></div>"+
+    '<div class="field"><label>Recommended Recovery</label><div>'+esc(action)+"</div></div>"+
+    '<div class="field"><label>Fixed-Fee Implementation</label><div style="font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--rra-brass)">$997 fixed fee</div></div>'+
     '<div class="field"><label>Included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
       "<li>Deep diagnosis of the top validated leak</li><li>Implementation of the single fix above</li><li>30-day measurement of recovered activity</li></ul></div>"+
     '<div class="field"><label>Not included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
       "<li>Secondary opportunities (see Better/Best)</li><li>Ongoing management or optimization</li><li>Revenue-share or performance guarantees — none exist at any tier</li></ul></div>"+
     '<div class="field"><label>Next step</label><div>Reply to confirm and we start within 48 hours.</div></div>'+
     "</div>"+
-    '<div class="card"><div class="head">Better / Best (if the owner wants broader scope)</div>'+
+    '<div class="card"><div class="head">Better / Best — Broader Recovery Scope</div>'+
     '<p class="note"><b>Better:</b> $5,000 setup + $2,500/month — implement the top 3 opportunities, 90-day roadmap.<br><b>Best:</b> $7,500/month — full ongoing revenue recovery management.</p></div>';
 }
 
@@ -1177,10 +1277,14 @@ function renderLaunch(){
   var wins=STATE.prospects.filter(function(p){return p.outcome==="WON";}).length;
   var lost=STATE.prospects.filter(function(p){return p.outcome==="LOST";}).length;
   var collected=STATE.prospects.reduce(function(s,p){return s+((p.wonDetails&&p.wonDetails.amount)||0);},0);
-  document.getElementById("scoreboardStats").innerHTML=[
+  var scoreStats=[
     ["Prospects",total+"/"+MAX_SLOTS],["Contacted",contacted+"/"+MAX_SLOTS],["Replies",replies],
     ["Conversations",convos],["Proposals",proposals],["Wins",wins],["Lost",lost],["Collected",fmtMoney(collected)]
-  ].map(function(s){return '<div class="stat"><strong>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";}).join("");
+  ];
+  document.getElementById("scoreboardStats").innerHTML=scoreStats.map(function(s){
+    var color=(s[0]==="Wins"&&wins)||s[0]==="Collected"?"var(--rra-green)":((s[0]==="Lost"&&lost)?"var(--rra-red-text)":"");
+    return '<div class="stat"><strong'+(color?' style="color:'+color+'"':"")+'>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
+  }).join("");
 
   var verdict;
   if(total<MAX_SLOTS){verdict="Cohort not yet full ("+total+"/5). Select and add the remaining prospects before drawing conclusions.";}
@@ -1254,14 +1358,14 @@ function renderCallBody(){
   var opener=buildPitch(p,"call")||"No evidence yet — add at least one finding before calling.";
   body.innerHTML=
     '<div class="callco">'+esc(p.company)+"</div>"+
-    '<div style="color:#94a3b8;font-size:13px">'+esc(p.city||"")+(p.phone?" &middot; "+esc(p.phone):"")+"</div>"+
-    '<div class="callsection"><h4>Top leak</h4><div class="calltext">'+(top?esc(top.issue):"No validated evidence yet")+"</div></div>"+
-    (top?'<div class="callsection"><h4>Estimated impact</h4><div class="callimpact">'+fmtMoney(top.impact)+"/mo</div></div>":"")+
+    '<div style="color:var(--rra-muted);font-size:13px">'+esc(p.city||"")+(p.phone?" &middot; "+esc(p.phone):"")+"</div>"+
+    '<div class="callsection"><h4>Top Revenue Leak</h4><div class="calltext">'+(top?esc(top.issue):"No validated evidence yet")+"</div></div>"+
     (top&&top.source?'<div class="callsection"><h4>Evidence</h4><div class="calltext">'+esc(top.source)+"</div></div>":"")+
-    '<div class="callsection"><h4>Call opener</h4><div class="calltext">'+esc(opener)+"</div></div>"+
-    '<div class="callsection"><h4>Discovery questions</h4>'+DISCOVERY_QUESTIONS.map(function(q){return '<div class="callq">'+esc(q)+"</div>";}).join("")+"</div>"+
-    '<div class="callsection"><h4>Objection responses</h4>'+OBJECTIONS.map(function(o){return '<details class="callobj"><summary>&ldquo;'+esc(o[0])+'&rdquo;</summary><p>'+esc(o[1])+"</p></details>";}).join("")+"</div>"+
-    '<div class="callsection"><h4>Next step</h4><div class="calltext">'+esc(action?action.text:"No action needed right now.")+"</div></div>";
+    (top?'<div class="callsection"><h4>Financial Impact</h4><div class="callimpact">'+fmtMoney(top.impact)+'/mo</div><div class="note" style="margin-top:4px">'+fmtMoney(top.impact*12)+" / yr &middot; "+qualityBadge(top.quality)+"</div></div>":"")+
+    '<div class="callsection"><h4>Call Opener</h4><div class="calltext">'+esc(opener)+"</div></div>"+
+    '<div class="callsection"><h4>Discovery Questions</h4>'+DISCOVERY_QUESTIONS.map(function(q){return '<div class="callq">'+esc(q)+"</div>";}).join("")+"</div>"+
+    '<div class="callsection"><h4>Objection Responses</h4>'+OBJECTIONS.map(function(o){return '<details class="callobj"><summary>&ldquo;'+esc(o[0])+'&rdquo;</summary><p>'+esc(o[1])+"</p></details>";}).join("")+"</div>"+
+    '<div class="callsection"><h4>Next Step</h4><div class="calltext">'+esc(action?action.text:"No action needed right now.")+"</div></div>";
 }
 
 /* ============ global render ============ */
