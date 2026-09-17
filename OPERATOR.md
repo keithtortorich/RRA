@@ -14,6 +14,14 @@ Run the smallest end-to-end system that can produce a credible paid revenue-reco
   - `ai-reputation-claude`
   - `ai-sales-team-claude`
 
+`rra_mvp/runner.py` also defines a fifth worker slot, `proposal`
+(`RRA_PROPOSAL_REPO` / `ai-proposal-claude`), but nothing in the current
+`revenue-scan` / `revenue-audit` / `revenue-propose` commands calls it —
+`revenue-propose` builds the proposal directly from the opportunities JSON,
+no worker subprocess involved. You do not need this fifth repo to run the
+live path; it's unused configuration, not a missing prerequisite. If a
+worker actually calls it in the future, add it here as a real prerequisite.
+
 ## Configure workers
 
 From the RRA repository root:
@@ -33,16 +41,19 @@ pip install -e .
 
 ## Commands
 
+`revenue-audit` and `revenue-propose` both require the client name as the
+first argument, before the URL or file path:
+
 ```bash
 revenue-scan https://example-hvac.com
-revenue-audit https://example-hvac.com
-revenue-propose path/to/opportunities.json
+revenue-audit "ACME HVAC" https://example-hvac.com
+revenue-propose "ACME HVAC" path/to/opportunities.json
 ```
 
 For a stronger audit, replace benchmark assumptions with observed metrics:
 
 ```bash
-revenue-audit https://example-hvac.com --metrics metrics.json
+revenue-audit "ACME HVAC" https://example-hvac.com --metrics metrics.json
 ```
 
 Example `metrics.json`:
