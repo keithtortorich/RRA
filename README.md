@@ -26,6 +26,10 @@ Until five real proposals answer that question, more platform work is out of sco
 - [docs/MVP.md](docs/MVP.md): complete stripped-MVP implementation reference.
 - [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md): five-prospect validation plan.
 - [docs/SALES_PLAYBOOK.md](docs/SALES_PLAYBOOK.md): launch-stage sales operating playbook.
+- [docs/MEASUREMENT_PROTOCOL.md](docs/MEASUREMENT_PROTOCOL.md): how to turn a
+  delivered fix into a documented (not estimated) recovered-revenue number.
+- [docs/VALIDATION_SCOREBOARD.md](docs/VALIDATION_SCOREBOARD.md): the three
+  gates (SELL / PROVE / REPEAT), the batch ladder, and the scoreboard template.
 - [pipeline.md](pipeline.md): prospect tracking template.
 - [SALES TOOL.html](SALES%20TOOL.html): the sales cockpit — five-prospect board,
   revenue calculator, evidence, outreach, $997 offer builder, Call Mode,
