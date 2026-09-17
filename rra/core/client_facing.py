@@ -40,8 +40,14 @@ def _safe_label(opp: Dict[str, Any]) -> str:
     label = opp.get("effort_label")
     if label:
         return str(label)
-    effort = opp.get("effort")
     mapping = {1: "Trivial", 2: "Low", 3: "Medium", 4: "High", 5: "Very High"}
+    raw_effort = opp.get("effort")
+    if raw_effort is None:
+        return "Medium"
+    try:
+        effort = int(raw_effort)
+    except (TypeError, ValueError):
+        return "Medium"
     return mapping.get(effort, "Medium")
 
 

@@ -95,7 +95,7 @@ class ScoringResult:
 
 def score_evidence(business_id: str, evidence: List[Dict[str,Any]], client_metrics: Optional[Dict[str,float]]=None) -> ScoringResult:
     if not business_id: raise ValueError("business_id is required")
-    client_metrics=client_metrics or {}; warnings=[]; signal_to_evidence={}
+    client_metrics=client_metrics or {}; warnings=[]; signal_to_evidence: Dict[str, List[str]] = {}
     for ev in evidence or []:
         try: conf=float(ev.get("confidence",0) or 0)
         except (TypeError,ValueError):

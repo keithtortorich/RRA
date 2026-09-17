@@ -75,7 +75,7 @@ def _resolve_safe_ip(hostname: str, port: int) -> str:
                 f"refusing to scan {hostname}: resolves to a non-public address ({addr})"
             )
         if resolved_ip is None:
-            resolved_ip = addr
+            resolved_ip = str(addr)
     if resolved_ip is None:
         raise ValueError(f"could not resolve host: {hostname}")
     return resolved_ip
