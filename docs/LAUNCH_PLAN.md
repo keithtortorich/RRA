@@ -56,6 +56,11 @@ No agencies. No franchises. No commercial-only. No shops with a full-time market
 
 Write the list down in a file called pipeline.md. Columns: name, URL, phone, owner, why-them, status.
 
+Also open `docs/VALIDATION_SCOREBOARD.md` and add these five as Batch 1, row
+1-5. `pipeline.md` tracks each prospect's day-to-day state; the scoreboard
+tracks the batch-level read (sold / conversations / replies) you'll need at
+Step 6 to decide what Batch 2 changes, if anything.
+
 ---
 
 ## Step 3 — Run the audit, then do 20 minutes of manual work (this week)
@@ -124,13 +129,13 @@ Some will ghost. Follow up once at 4 days, once at 11 days, then move on.
 
 After 5 proposals, you know one of three things:
 
-A. Two or three sold. You have a business. Move to delivery. Fix the #1 leak for the first client using the missed-call playbook. Bill the $997. Measure recovered calls over 30 days. That number is your first case study.
+A. Two or three sold. You have a business. Move to delivery. Fix the #1 leak for the first client using the missed-call playbook. Bill the $997. Run `docs/MEASUREMENT_PROTOCOL.md` — baseline, intervention, 30-day after, documented result. That measured number, not the pre-fix estimate, is your first case study.
 
-B. Zero sold, but real conversations. The offer is close. Diagnose: was the number too small? The price too high? The proposal confusing? Adjust one variable. Run 5 more.
+B. Zero sold, but real conversations. The offer is close. Diagnose: was the number too small? The price too high? The proposal confusing? Adjust one variable. Run Batch 2 (see `docs/VALIDATION_SCOREBOARD.md`).
 
 C. Zero replies. The targets were wrong, or the emails read like a robot wrote them, or the numbers didn't ring true. Diagnose. Pick 5 different targets. Do the 20-minute manual pass harder.
 
-Either way — you will know something you do not know today.
+Either way — you will know something you do not know today. Write the read in `docs/VALIDATION_SCOREBOARD.md` before running the next batch.
 
 ---
 
