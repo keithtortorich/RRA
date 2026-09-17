@@ -1,0 +1,185 @@
+{
+  "version": 2,
+  "prospects": [
+    {
+      "id": "seed-exodus-mechanical",
+      "company": "Exodus Mechanical",
+      "city": "Melissa, TX",
+      "website": "https://www.exodusmechanical.com",
+      "contact": "Brian & Kristi",
+      "phone": "469-500-7977",
+      "email": "",
+      "source": "Public listing research (company site, Yelp/Houzz reviews) — see pipeline.md",
+      "notes": [
+        {
+          "id": "seed-note-exodus-1",
+          "text": "Owners publicly advertise \"call or text\" on this number — a direct SMS outreach route. Reported (unverified on-site): never charges for after-hours service, offers emergency service, guaranteed same-day service, Neighborhood Favorite 2021-2023. If accurate, missed-call/after-hours may NOT be the right wedge here — check reviews/booking/follow-up angles first during the manual pass instead of defaulting to the standard playbook.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "state": "TARGET",
+      "dateAdded": "2026-09-17T00:14:23.000Z",
+      "lastContact": "",
+      "sentDate": null,
+      "followupsSent": 0,
+      "outcome": null,
+      "wonDetails": null,
+      "calc": {"mode": "missed"},
+      "evidence": [
+        {
+          "id": "seed-ev-exodus-1",
+          "issue": "Owners advertise a direct call/text number — but site/reviews claim no after-hours charge, emergency service, and same-day guarantee, so the missed-call wedge needs verifying, not assuming.",
+          "source": "Company site + Yelp/Houzz reviews (search-indexed, not directly verified on-site)",
+          "leakId": null,
+          "quality": "ESTIMATED",
+          "impact": 0,
+          "priority": 3,
+          "notes": "Not sized yet — run the calculator after the 20-minute manual pass identifies the actual leak.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "topLeakId": "seed-ev-exodus-1"
+    },
+    {
+      "id": "seed-ample-services",
+      "company": "Ample Services",
+      "city": "Fulshear, TX",
+      "website": "https://www.amplehouston.com",
+      "contact": "Robert Coufal",
+      "phone": "832-794-4878",
+      "email": "",
+      "source": "Public listing research (BBB, company site) — see pipeline.md",
+      "notes": [
+        {
+          "id": "seed-note-ample-1",
+          "text": "Owner confirmed via BBB. Site claims 24/7 emergency HVAC service — directly testable with a 7pm call. That's the wedge to verify first.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "state": "TARGET",
+      "dateAdded": "2026-09-17T00:14:23.000Z",
+      "lastContact": "",
+      "sentDate": null,
+      "followupsSent": 0,
+      "outcome": null,
+      "wonDetails": null,
+      "calc": {"mode": "missed"},
+      "evidence": [
+        {
+          "id": "seed-ev-ample-1",
+          "issue": "Site claims 24/7 emergency service — test whether a call after hours actually gets a live response.",
+          "source": "Company site (amplehouston.com), search-indexed, not yet verified with a real test call",
+          "leakId": null,
+          "quality": "ESTIMATED",
+          "impact": 0,
+          "priority": 3,
+          "notes": "Not sized yet — run the calculator after the 7pm test call.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "topLeakId": "seed-ev-ample-1"
+    },
+    {
+      "id": "seed-bill-anderson-air",
+      "company": "Bill Anderson Air",
+      "city": "Katy/Fulshear, TX",
+      "website": "https://www.billandersonair.com",
+      "contact": "Bill Anderson",
+      "phone": "281-769-9999",
+      "email": "",
+      "source": "Public listing research (BBB, Yelp, company site) — see pipeline.md",
+      "notes": [
+        {
+          "id": "seed-note-banderson-1",
+          "text": "Family-owned since 1998. Posted hours Mon-Fri 8am-4pm, no weekend/after-hours coverage found in listings — plausible after-hours/weekend capture wedge, worth the 7pm and Saturday test.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "state": "TARGET",
+      "dateAdded": "2026-09-17T00:14:23.000Z",
+      "lastContact": "",
+      "sentDate": null,
+      "followupsSent": 0,
+      "outcome": null,
+      "wonDetails": null,
+      "calc": {"mode": "missed"},
+      "evidence": [
+        {
+          "id": "seed-ev-banderson-1",
+          "issue": "Posted business hours are Mon-Fri 8am-4pm only — no after-hours/weekend coverage advertised. Verify what actually happens on a call outside those hours.",
+          "source": "BBB/Yelp business listings (search-indexed, not yet verified with a real test call)",
+          "leakId": null,
+          "quality": "ESTIMATED",
+          "impact": 0,
+          "priority": 3,
+          "notes": "Not sized yet — run the calculator after the manual pass.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "topLeakId": "seed-ev-banderson-1"
+    },
+    {
+      "id": "seed-castle-ac-heating",
+      "company": "Castle Air Conditioning & Heating",
+      "city": "Fulshear, TX",
+      "website": "https://castleacandheating.com",
+      "contact": "Josh Cartwright",
+      "phone": "713-667-7606",
+      "email": "",
+      "source": "Public listing research (company site, LinkedIn, BBB) — see pipeline.md",
+      "notes": [
+        {
+          "id": "seed-note-castle-1",
+          "text": "Owner-operated since 2014, confirmed via company site and LinkedIn. No specific claims found yet to test against — needs the full manual pass, no shortcuts assumed.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "state": "TARGET",
+      "dateAdded": "2026-09-17T00:14:23.000Z",
+      "lastContact": "",
+      "sentDate": null,
+      "followupsSent": 0,
+      "outcome": null,
+      "wonDetails": null,
+      "calc": {"mode": "missed"},
+      "evidence": [],
+      "topLeakId": null
+    },
+    {
+      "id": "seed-reed-heating-air",
+      "company": "Reed Heating and Air",
+      "city": "Melissa, TX",
+      "website": "",
+      "contact": "Eric Reed",
+      "phone": "469-831-9842",
+      "email": "",
+      "source": "Public listing research (BBB, LinkedIn) — see pipeline.md",
+      "notes": [
+        {
+          "id": "seed-note-reed-1",
+          "text": "Owner and ~20+ years in business confirmed via BBB and LinkedIn. Website NOT confirmed — multiple unrelated Texas HVAC companies also use \"Reed\" in their name/domain. Confirm the real site directly (call or Google Maps) before running revenue-scan/audit against any reed*.com domain.",
+          "ts": "2026-09-17T00:14:23.000Z"
+        }
+      ],
+      "state": "TARGET",
+      "dateAdded": "2026-09-17T00:14:23.000Z",
+      "lastContact": "",
+      "sentDate": null,
+      "followupsSent": 0,
+      "outcome": null,
+      "wonDetails": null,
+      "calc": {"mode": "missed"},
+      "evidence": [],
+      "topLeakId": null
+    }
+  ],
+  "activities": [],
+  "generalNotes": [
+    {
+      "id": "seed-gen-note-1",
+      "text": "Batch 1 seeded from public-listing research (BBB, LinkedIn, company sites, aggregator reviews). This research came from an environment whose network egress was allowlisted — it could not load these companies' own sites directly to quote exact on-page text or detect booking/chat/SMS widgets, only search-indexed summaries. Treat every seeded evidence entry as ESTIMATED/reported, not KNOWN, until verified by the Step 3 manual pass (call at 7pm, check the site on a phone, count reviews) and/or an actual revenue-scan/revenue-audit run from a normal internet connection.",
+      "ts": "2026-09-17T00:14:23.000Z"
+    }
+  ],
+  "settings": {}
+}
