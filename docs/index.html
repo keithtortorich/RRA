@@ -159,6 +159,14 @@ button{cursor:pointer;-webkit-appearance:none}
 .pcard .nextrow .nextlabel{color:var(--rra-muted);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em;font-family:var(--font-mono);flex-shrink:0}
 .warnflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-amber-bg);border:1px solid var(--rra-amber);border-radius:var(--r);color:var(--rra-amber);font-size:11.5px;line-height:1.4}
 .warnflag b{color:var(--rra-amber)}
+.readyflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-green-bg);border:1px solid var(--rra-green);border-radius:var(--r);color:var(--rra-green);font-size:11.5px;line-height:1.4}
+.verifyitem{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--rra-border)}
+.verifyitem:first-child{border-top:0}
+.verifyitem input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin-top:2px;accent-color:var(--rra-brass)}
+.verifyitem .vlabel{font-size:12.5px;color:var(--rra-bone);line-height:1.4}
+.verifyitem.done .vlabel{color:var(--rra-muted);text-decoration:line-through}
+.verifyitem .vnote{margin-top:6px;width:100%;padding:8px 10px;border:1px solid var(--rra-border);border-radius:var(--r);background:var(--rra-obsidian);color:var(--rra-bone);font-size:11.5px}
+.verifyitem .vbody{flex:1;min-width:0}
 
 /* -- modal / detail -- */
 .overlay{position:fixed;inset:0;background:rgba(11,14,20,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
@@ -419,6 +427,11 @@ button{cursor:pointer;-webkit-appearance:none}
           <div class="field"><label>Email</label><input id="pfEmail" type="email"></div>
           <div class="field"><label>Source</label><input id="pfSource" placeholder="Google Maps, referral..."></div>
         </div>
+        <div class="card">
+          <div class="head">Verify<small id="verifyStatus"></small></div>
+          <p class="note">Confirm these before a dollar figure goes to the client. Each check can carry a short source note.</p>
+          <div id="verifyList"></div>
+        </div>
         <div class="field"><label>Why this target</label><textarea id="pfWhy" rows="2"></textarea></div>
         <div class="field"><label>Pipeline state</label>
           <select id="pfState">
@@ -491,6 +504,7 @@ button{cursor:pointer;-webkit-appearance:none}
 
       <div class="subpanel" id="s-outreach">
         <div class="pitchtypes">
+          <button class="ptype" data-t="scan">Free scan invite</button>
           <button class="ptype active" data-t="email">First email</button>
           <button class="ptype" data-t="call">Cold call opener</button>
           <button class="ptype" data-t="d4">Day 4 follow-up</button>
@@ -757,6 +771,28 @@ function topEvidence(p){
   return sorted[0]||null;
 }
 
+/* ---------- verify checklist: confirm before a dollar claim goes to the client ---------- */
+var VERIFY_ITEMS=[
+  {id:"business",label:"Correct business identity confirmed (name, address, owner match)"},
+  {id:"phone",label:"Phone number confirmed (correct, working line)"},
+  {id:"website",label:"Website confirmed (loads, matches business)"},
+  {id:"reviews",label:"Reviews checked (Google/Yelp — claims vs. complaints)"},
+  {id:"afterHours",label:"After-hours call result recorded (test call made and logged)"}
+];
+function verifyProgress(p){
+  var v=(p&&p.verify)||{};
+  var done=VERIFY_ITEMS.filter(function(it){return v[it.id]&&v[it.id].done;}).length;
+  return {done:done,total:VERIFY_ITEMS.length,allDone:done===VERIFY_ITEMS.length};
+}
+function nextVerifyItem(p){
+  var v=(p&&p.verify)||{};
+  for(var i=0;i<VERIFY_ITEMS.length;i++){if(!(v[VERIFY_ITEMS[i].id]&&v[VERIFY_ITEMS[i].id].done))return VERIFY_ITEMS[i];}
+  return null;
+}
+function readyToShare(p){
+  return verifyProgress(p).allDone&&(p.evidence||[]).length>0;
+}
+
 function followupInfo(p){
   if(!p.sentDate)return null;
   if(p.state!=="SENT"&&p.state!=="CONVERSATION")return null;
@@ -789,7 +825,11 @@ function prospectAction(p){
     if((p.evidence||[]).length)return {text:"Build the $997 proposal for "+p.company,urgency:4,kind:"offer"};
     return {text:"Add evidence for "+p.company,urgency:4,kind:"evidence"};
   }
-  if(p.state==="AUDITED")return {text:"Verify "+p.company+" evidence (20-minute pass)",urgency:5,kind:"verify"};
+  if(p.state==="AUDITED"){
+    var vNext=nextVerifyItem(p);
+    if(vNext)return {text:"Verify: "+vNext.label+" — "+p.company,urgency:5,kind:"verify"};
+    return {text:"Mark "+p.company+" VERIFIED — checklist complete",urgency:5,kind:"verify"};
+  }
   if(p.state==="TARGET"){
     if(!(p.evidence||[]).length)return {text:"Scan "+p.company,urgency:6,kind:"scan"};
     return {text:"Mark "+p.company+" AUDITED once scanned",urgency:6,kind:"audit"};
@@ -815,7 +855,11 @@ function prospectActionCard(p){
     if((p.evidence||[]).length)return {text:"Build the $997 proposal",due:null,status:""};
     return {text:"Add evidence",due:null,status:""};
   }
-  if(p.state==="AUDITED")return {text:"Verify evidence (20-minute pass)",due:null,status:""};
+  if(p.state==="AUDITED"){
+    var vNextC=nextVerifyItem(p);
+    if(vNextC)return {text:"Verify: "+vNextC.label,due:null,status:""};
+    return {text:"Mark VERIFIED — checklist complete",due:null,status:""};
+  }
   if(p.state==="TARGET"){
     if(!(p.evidence||[]).length)return {text:"Scan website",due:null,status:""};
     return {text:"Mark AUDITED once scanned",due:null,status:""};
@@ -1064,6 +1108,7 @@ function openProspectSheet(id){
   document.getElementById("calcResult").textContent="$0";
   document.getElementById("calcResultAnnual").textContent="$0";
   document.getElementById("calcSub").textContent="";
+  renderVerifyChecklist(p);
   if(p)renderEvidence(p);
   if(p)renderOutreachPanel(p);
   if(p)renderOfferPanel(p);
@@ -1239,6 +1284,44 @@ document.getElementById("btnAddEvidence").addEventListener("click",function(){
   renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();
   toast("Evidence added");
 });
+function renderVerifyChecklist(p){
+  var status=document.getElementById("verifyStatus");
+  var list=document.getElementById("verifyList");
+  if(!p){
+    status.textContent="";
+    list.innerHTML='<p class="note">Save the prospect first, then verify.</p>';
+    return;
+  }
+  p.verify=p.verify||{};
+  var prog=verifyProgress(p);
+  status.textContent=prog.done+"/"+prog.total+" confirmed"+(readyToShare(p)?" — ready to share":"");
+  list.innerHTML=VERIFY_ITEMS.map(function(it){
+    var rec=p.verify[it.id]||{};
+    return '<div class="verifyitem'+(rec.done?" done":"")+'" data-vitem="'+it.id+'">'+
+      '<input type="checkbox" data-vcheck="'+it.id+'"'+(rec.done?" checked":"")+'>'+
+      '<div class="vbody"><div class="vlabel">'+esc(it.label)+(rec.ts?' <span class="note">('+esc(new Date(rec.ts).toLocaleDateString())+')</span>':"")+'</div>'+
+      '<input class="vnote" type="text" data-vnote="'+it.id+'" placeholder="Source / note (optional)" value="'+esc(rec.note||"")+'"></div>'+
+    "</div>";
+  }).join("");
+  Array.prototype.forEach.call(list.querySelectorAll("[data-vcheck]"),function(el){
+    el.addEventListener("change",function(){
+      var id=el.getAttribute("data-vcheck");
+      p.verify[id]=p.verify[id]||{note:""};
+      p.verify[id].done=el.checked;
+      p.verify[id].ts=el.checked?nowISO():null;
+      saveState();renderVerifyChecklist(p);renderSlots();renderOutreachPanel(p);
+    });
+  });
+  Array.prototype.forEach.call(list.querySelectorAll("[data-vnote]"),function(el){
+    el.addEventListener("change",function(){
+      var id=el.getAttribute("data-vnote");
+      p.verify[id]=p.verify[id]||{done:false};
+      p.verify[id].note=el.value.trim();
+      saveState();
+    });
+  });
+}
+
 function renderEvidence(p){
   document.getElementById("evCount").textContent=(p.evidence||[]).length+" on file";
   var list=document.getElementById("evList");
@@ -1283,10 +1366,16 @@ document.querySelectorAll(".ptype").forEach(function(btn){
   });
 });
 function buildPitch(p,type){
-  var top=topEvidence(p);
-  if(!top)return null;
   var biz=p.company||"[Business]";
   var owner=p.contact||"there";
+  if(type==="scan"){
+    var top0=topEvidence(p);
+    var leak0=top0&&leakById(top0.leakId);
+    var hint=leak0?(" Early signs point toward "+leak0.name.toLowerCase()+", but I want to confirm before I say more."):"";
+    return "Subject: Free revenue-leak scan for "+biz+"\n\n"+owner+",\n\nI run Revenue Recovery Agency. I do a free scan of how HVAC businesses like "+biz+" handle missed calls, after-hours requests, and online booking — no dollar estimate, no pitch, just a plain-English readout of what I actually find."+hint+"\n\nWant me to run it and send you what I see?\n\n[YOUR NAME]";
+  }
+  var top=topEvidence(p);
+  if(!top)return null;
   var leak=top.issue||"a revenue leak";
   var ev=top.source||"observed directly";
   var impact=top.impact?fmtMoney(top.impact)+"/month":"a meaningful monthly amount";
@@ -1304,7 +1393,17 @@ function renderOutreachPanel(p){
   document.getElementById("pitchOut").textContent=text||"Add evidence first, then generate outreach.";
   var top=topEvidence(p);
   var warn=document.getElementById("pitchWarn");
-  warn.innerHTML=(top&&top.quality!=="KNOWN")?('<div class="warnflag"><span>&#9888;</span><span><b>Dollar figure is '+esc(top.quality)+', not owner-confirmed.</b> This script hedges the number as an estimate — get real numbers before you promise a total.</span></div>'):"";
+  var msgs=[];
+  if(pitchType!=="scan"){
+    var prog=verifyProgress(p);
+    if(!prog.allDone){
+      msgs.push('<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+prog.done+'/'+prog.total+').</b> This script names a dollar figure before the basics are confirmed — consider the Free scan invite instead, or finish verifying first.</span></div>');
+    }
+    if(top&&top.quality!=="KNOWN"){
+      msgs.push('<div class="warnflag"><span>&#9888;</span><span><b>Dollar figure is '+esc(top.quality)+', not owner-confirmed.</b> This script hedges the number as an estimate — get real numbers before you promise a total.</span></div>');
+    }
+  }
+  warn.innerHTML=msgs.join("");
 }
 document.getElementById("btnCopyPitch").addEventListener("click",function(){
   var text=document.getElementById("pitchOut").textContent;
@@ -1324,7 +1423,12 @@ function renderOfferPanel(p){
   var action=leak?leak.action:"Implement the fix for the validated leak";
   var qualityNote=top.quality==="KNOWN"?"This figure is based on owner-confirmed numbers.":(top.quality==="BENCHMARK"?"This figure is a conservative industry-benchmark approximation.":"This figure is a conservative estimate pending owner-confirmed numbers.");
   var offerWarn=top.quality!=="KNOWN"?('<div class="warnflag"><span>&#9888;</span><span><b>Unverified input.</b> '+esc(qualityNote)+' Confirm the underlying number with the owner before quoting this figure as fact.</span></div>'):"";
+  var readyProg=verifyProgress(p);
+  var readyBanner=readyProg.allDone?
+    '<div class="readyflag"><span>&#10003;</span><span><b>Ready to share.</b> Verification checklist complete.</span></div>':
+    '<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+readyProg.done+'/'+readyProg.total+').</b> Finish it on the Overview tab before sending this as a confident client claim.</span></div>';
   out.innerHTML=
+    readyBanner+
     '<div class="card"><div class="head">Deploy $997 Implementation</div>'+
     '<div class="field"><label>Top Revenue Leak</label><div>'+esc(top.issue)+"</div></div>"+
     (top.source?'<div class="field"><label>Evidence</label><div>'+esc(top.source)+"</div></div>":"")+
