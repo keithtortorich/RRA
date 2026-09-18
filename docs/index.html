@@ -155,6 +155,10 @@ button{cursor:pointer;-webkit-appearance:none}
 .pcard .leak{margin-top:9px;font-size:12px;background:var(--rra-obsidian);border:1px solid var(--rra-border);border-radius:var(--r);padding:9px 10px;color:var(--rra-red-text)}
 .pcard .leak b{font-family:var(--font-body);color:var(--rra-bone);font-weight:600;display:block;margin-bottom:3px}
 .pcard .followrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--rra-bone)}
+.pcard .nextrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--rra-bone);border-top:1px solid var(--rra-border);padding-top:9px}
+.pcard .nextrow .nextlabel{color:var(--rra-muted);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em;font-family:var(--font-mono);flex-shrink:0}
+.warnflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-amber-bg);border:1px solid var(--rra-amber);border-radius:var(--r);color:var(--rra-amber);font-size:11.5px;line-height:1.4}
+.warnflag b{color:var(--rra-amber)}
 
 /* -- modal / detail -- */
 .overlay{position:fixed;inset:0;background:rgba(11,14,20,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
@@ -484,6 +488,7 @@ button{cursor:pointer;-webkit-appearance:none}
           <button class="ptype" data-t="d4">Day 4 follow-up</button>
           <button class="ptype" data-t="d11">Day 11 follow-up</button>
         </div>
+        <div id="pitchWarn"></div>
         <div class="pitchbox" id="pitchOut">Add evidence first, then generate outreach.</div>
         <button class="btn outline block copybtn" id="btnCopyPitch">Copy to clipboard</button>
       </div>
@@ -740,6 +745,32 @@ function prospectAction(p){
   return null;
 }
 
+function prospectActionCard(p){
+  if(p.outcome==="WON"||p.outcome==="LOST")return null;
+  if(p.outcome==="NURTURE"){
+    if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
+      return {text:"Re-engage (30-day mark passed)",due:null,status:"today"};
+    }
+    return null;
+  }
+  var fu=followupInfo(p);
+  if(fu&&fu.status==="overdue")return {text:fu.label+" OVERDUE",due:fu.due,status:"overdue"};
+  if(fu&&fu.status==="today")return {text:fu.label+" due today",due:fu.due,status:"today"};
+  if(p.state==="CONVERSATION")return {text:"Continue conversation — push next step",due:null,status:""};
+  if(p.state==="PROPOSAL_READY")return {text:"Send initial outreach",due:null,status:""};
+  if(p.state==="VERIFIED"){
+    if((p.evidence||[]).length)return {text:"Build the $997 proposal",due:null,status:""};
+    return {text:"Add evidence",due:null,status:""};
+  }
+  if(p.state==="AUDITED")return {text:"Verify evidence (20-minute pass)",due:null,status:""};
+  if(p.state==="TARGET"){
+    if(!(p.evidence||[]).length)return {text:"Scan website",due:null,status:""};
+    return {text:"Mark AUDITED once scanned",due:null,status:""};
+  }
+  if(fu&&fu.status==="upcoming")return {text:fu.label+" upcoming",due:fu.due,status:"upcoming"};
+  return null;
+}
+
 function nextActionQueue(){
   var items=[];
   STATE.prospects.forEach(function(p){
@@ -859,18 +890,18 @@ function renderSlots(){
       continue;
     }
     var top=topEvidence(p);
-    var fu=followupInfo(p);
     var stateBadge='<span class="badge state">'+esc(p.state)+"</span>";
     if(p.state==="CONVERSATION")stateBadge='<span class="badge known">'+esc(p.state)+"</span>";
     if(p.outcome==="WON")stateBadge='<span class="badge won">WON</span>';
     if(p.outcome==="LOST")stateBadge='<span class="badge lost">LOST</span>';
-    var leakHtml=top?('<div class="leak"><b>'+esc(top.issue||"Top leak")+"</b><br>"+fmtMoney(top.impact)+"/mo &middot; "+fmtMoney(top.impact*12)+"/yr &middot; "+qualityBadge(top.quality)+"</div>"):'<div class="leak note">No evidence yet — run a scan and add findings.</div>';
-    var followHtml="";
-    if(fu&&fu.status!=="complete"){
-      var cls=fu.status==="overdue"?"overdue":(fu.status==="today"?"today":"");
-      followHtml='<div class="followrow"><span>'+esc(fu.label)+"</span>"+(cls?'<span class="badge '+cls+'">'+fu.status.toUpperCase()+"</span>":'<span class="note">'+fmtDate(fu.due)+"</span>")+"</div>";
+    var leakHtml=top?('<div class="leak"><b>'+esc(top.issue||"Top leak")+"</b><br>"+fmtMoney(top.impact)+"/mo &middot; "+fmtMoney(top.impact*12)+"/yr &middot; "+qualityBadge(top.quality)+(top.quality!=="KNOWN"?' <span class="note">confirm before quoting</span>':"")+"</div>"):'<div class="leak note">No evidence yet — run a scan and add findings.</div>';
+    var act=prospectActionCard(p);
+    var nextHtml="";
+    if(act){
+      var acls=act.status==="overdue"?"overdue":(act.status==="today"?"today":"");
+      nextHtml='<div class="nextrow"><span class="nextlabel">Next</span><span style="flex:1">'+esc(act.text)+"</span>"+(acls?'<span class="badge '+acls+'">'+act.status.toUpperCase()+"</span>":(act.due?'<span class="note">'+fmtDate(act.due)+"</span>":""))+"</div>";
     }
-    html+='<button class="pcard" data-open="'+p.id+'"><div class="top2"><div><div class="co">'+esc(p.company)+'</div><div class="sub">'+esc(p.city||"")+(p.contact?" &middot; "+esc(p.contact):"")+"</div></div>"+stateBadge+"</div>"+leakHtml+followHtml+"</button>";
+    html+='<button class="pcard" data-open="'+p.id+'"><div class="top2"><div><div class="co">'+esc(p.company)+'</div><div class="sub">'+esc(p.city||"")+(p.contact?" &middot; "+esc(p.contact):"")+"</div></div>"+stateBadge+"</div>"+leakHtml+nextHtml+"</button>";
   }
   grid.innerHTML=html;
   Array.prototype.forEach.call(grid.querySelectorAll("[data-open]"),function(el){
@@ -1152,6 +1183,7 @@ function renderEvidence(p){
       "<div><b>"+esc(ev.issue)+"</b></div>"+
       (ev.source?'<div class="note">'+esc(ev.source)+"</div>":"")+
       (leak?'<div class="note">Leak: '+esc(leak.name)+"</div>":"")+
+      (isTop&&ev.quality!=="KNOWN"?'<div class="warnflag"><span>&#9888;</span><span>This is the figure driving the pitch and offer, and it is not owner-confirmed.</span></div>':"")+
       '<div class="row" style="margin-top:8px">'+
         (isTop?'<span class="badge known">TOP LEAK</span>':'<button class="pill" data-pin="'+ev.id+'">Mark as top leak</button>')+
         '<button class="pill" data-rmev="'+ev.id+'">Remove</button>'+
@@ -1199,6 +1231,9 @@ function buildPitch(p,type){
 function renderOutreachPanel(p){
   var text=buildPitch(p,pitchType);
   document.getElementById("pitchOut").textContent=text||"Add evidence first, then generate outreach.";
+  var top=topEvidence(p);
+  var warn=document.getElementById("pitchWarn");
+  warn.innerHTML=(top&&top.quality!=="KNOWN")?('<div class="warnflag"><span>&#9888;</span><span><b>Dollar figure is '+esc(top.quality)+', not owner-confirmed.</b> This script hedges the number as an estimate — get real numbers before you promise a total.</span></div>'):"";
 }
 document.getElementById("btnCopyPitch").addEventListener("click",function(){
   var text=document.getElementById("pitchOut").textContent;
@@ -1217,6 +1252,7 @@ function renderOfferPanel(p){
   var leak=leakById(top.leakId);
   var action=leak?leak.action:"Implement the fix for the validated leak";
   var qualityNote=top.quality==="KNOWN"?"This figure is based on owner-confirmed numbers.":(top.quality==="BENCHMARK"?"This figure is a conservative industry-benchmark approximation.":"This figure is a conservative estimate pending owner-confirmed numbers.");
+  var offerWarn=top.quality!=="KNOWN"?('<div class="warnflag"><span>&#9888;</span><span><b>Unverified input.</b> '+esc(qualityNote)+' Confirm the underlying number with the owner before quoting this figure as fact.</span></div>'):"";
   out.innerHTML=
     '<div class="card"><div class="head">Deploy $997 Implementation</div>'+
     '<div class="field"><label>Top Revenue Leak</label><div>'+esc(top.issue)+"</div></div>"+
@@ -1226,7 +1262,7 @@ function renderOfferPanel(p){
         '<div class="diagrow"><span class="diaglabel">Monthly Leakage</span><strong class="diagfigure" style="font-size:20px">'+fmtMoney(top.impact)+'</strong></div>'+
         '<div class="diagrow diagrow-sub"><span class="diaglabel">Annual Leakage</span><strong class="diagfigure diagfigure-sm">'+fmtMoney(top.impact*12)+"</strong></div>"+
       "</div>"+
-      '<div class="row" style="margin-top:8px">'+qualityBadge(top.quality)+'</div><div class="note" style="margin-top:6px">'+qualityNote+"</div></div>"+
+      '<div class="row" style="margin-top:8px">'+qualityBadge(top.quality)+"</div>"+offerWarn+"</div>"+
     '<div class="field"><label>Recommended Recovery</label><div>'+esc(action)+"</div></div>"+
     '<div class="field"><label>Fixed-Fee Implementation</label><div style="font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--rra-brass)">$997 fixed fee</div></div>'+
     '<div class="field"><label>Included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
