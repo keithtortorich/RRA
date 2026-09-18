@@ -416,6 +416,7 @@ button{cursor:pointer;-webkit-appearance:none}
       <button class="subtab" data-s="outreach">Outreach</button>
       <button class="subtab" data-s="offer">Implementation</button>
       <button class="subtab" data-s="packet">Client Packet</button>
+      <button class="subtab" data-s="handoff">Handoff</button>
       <button class="subtab" data-s="pnotes">Notes</button>
     </div>
     <div class="sheetbody">
@@ -557,6 +558,25 @@ button{cursor:pointer;-webkit-appearance:none}
           </div>
           <button class="btn primary block" id="btnMarkPacketSent">Mark packet sent</button>
           <div class="note" id="packetSentStatus"></div>
+        </div>
+      </div>
+
+      <div class="subpanel" id="s-handoff">
+        <div id="handoffNotWon"></div>
+        <div id="handoffBody" class="hidden">
+          <div class="card">
+            <div class="head">Agreed Fix<small id="handoffStatus"></small></div>
+            <div id="handoffLeak"></div>
+          </div>
+          <div class="card">
+            <div class="head">Baseline Measurement</div>
+            <p class="note">The starting numbers agreed with the client before the fix goes in — this is what the 30-day measurement compares against.</p>
+            <div class="field"><textarea id="hfBaseline" rows="3" placeholder="e.g. 14 missed calls/week measured Mon-Fri 8am-6pm before the fix"></textarea></div>
+          </div>
+          <div class="card">
+            <div class="head">Minimum Handoff Checklist<small id="handoffCount"></small></div>
+            <div id="handoffList"></div>
+          </div>
         </div>
       </div>
 
@@ -834,6 +854,24 @@ function readyToShare(p){
   return verifyProgress(p).allDone&&(p.evidence||[]).length>0;
 }
 
+/* ---------- handoff checklist: what a WON prospect needs before work starts ---------- */
+var HANDOFF_ITEMS=[
+  {id:"contact",label:"Client contact confirmed for scheduling the fix"},
+  {id:"baseline",label:"Baseline numbers captured (agreed starting point before the fix)"},
+  {id:"access",label:"Access gathered — scoped to only what this fix needs, nothing broader"},
+  {id:"measurement",label:"Client told to expect a 30-day measurement follow-up"}
+];
+function handoffProgress(p){
+  var h=(p&&p.handoff&&p.handoff.items)||{};
+  var done=HANDOFF_ITEMS.filter(function(it){return h[it.id]&&h[it.id].done;}).length;
+  return {done:done,total:HANDOFF_ITEMS.length,allDone:done===HANDOFF_ITEMS.length};
+}
+function nextHandoffItem(p){
+  var h=(p&&p.handoff&&p.handoff.items)||{};
+  for(var i=0;i<HANDOFF_ITEMS.length;i++){if(!(h[HANDOFF_ITEMS[i].id]&&h[HANDOFF_ITEMS[i].id].done))return HANDOFF_ITEMS[i];}
+  return null;
+}
+
 function followupInfo(p){
   if(!p.sentDate)return null;
   if(p.state!=="SENT"&&p.state!=="CONVERSATION")return null;
@@ -850,7 +888,12 @@ function followupInfo(p){
 }
 
 function prospectAction(p){
-  if(p.outcome==="WON"||p.outcome==="LOST")return null;
+  if(p.outcome==="WON"){
+    var hNext=nextHandoffItem(p);
+    if(hNext)return {text:"Handoff: "+hNext.label+" — "+p.company,urgency:1,kind:"handoff"};
+    return null;
+  }
+  if(p.outcome==="LOST")return null;
   if(p.outcome==="NURTURE"){
     if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
       return {text:"Re-engage "+p.company+" (NURTURE 30-day mark passed)",urgency:2,kind:"reengage"};
@@ -880,7 +923,12 @@ function prospectAction(p){
 }
 
 function prospectActionCard(p){
-  if(p.outcome==="WON"||p.outcome==="LOST")return null;
+  if(p.outcome==="WON"){
+    var hNextC=nextHandoffItem(p);
+    if(hNextC)return {text:"Handoff: "+hNextC.label,due:null,status:""};
+    return null;
+  }
+  if(p.outcome==="LOST")return null;
   if(p.outcome==="NURTURE"){
     if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
       return {text:"Re-engage (30-day mark passed)",due:null,status:"today"};
@@ -1154,6 +1202,7 @@ function openProspectSheet(id){
   if(p)renderOutreachPanel(p);
   if(p)renderOfferPanel(p);
   renderPacket(p);
+  renderHandoff(p);
   if(p)renderProspectNotes(p);
   document.getElementById("prospectOverlay").classList.remove("hidden");
 }
@@ -1560,6 +1609,64 @@ document.getElementById("btnMarkPacketSent").addEventListener("click",function()
   p.packet={sentAt:new Date(date).toISOString(),method:method};
   logActivity(p.id,"proposal","Client packet sent via "+method);
   saveState();renderPacket(p);renderActivity();toast("Packet marked sent");
+});
+
+/* ---------- handoff checklist (Close and onboard stage) ---------- */
+function renderHandoff(p){
+  var notWon=document.getElementById("handoffNotWon");
+  var body=document.getElementById("handoffBody");
+  if(!p||p.outcome!=="WON"){
+    body.classList.add("hidden");
+    notWon.innerHTML=p?'<p class="note">Handoff opens once this prospect is marked WON.</p>':"";
+    return;
+  }
+  notWon.innerHTML="";
+  body.classList.remove("hidden");
+  p.handoff=p.handoff||{baseline:"",items:{}};
+  var top=topEvidence(p);
+  var leak=top?leakById(top.leakId):null;
+  document.getElementById("handoffLeak").innerHTML=top?(
+    '<div class="field"><label>Leak</label><div>'+esc(top.issue)+"</div></div>"+
+    '<div class="field"><label>Impact</label><div>'+fmtMoney(top.impact)+"/mo &middot; "+fmtMoney(top.impact*12)+"/yr &middot; "+qualityBadge(top.quality)+"</div></div>"+
+    '<div class="field"><label>First implementation step</label><div>'+esc(leak?leak.action:"Implement the fix for the validated leak")+"</div></div>"+
+    '<div class="field"><label>Deal</label><div>'+esc((p.wonDetails&&p.wonDetails.tier)||"good")+" &middot; "+fmtMoney((p.wonDetails&&p.wonDetails.amount)||0)+"</div></div>"
+  ):'<p class="note">No evidence on file for this deal.</p>';
+  var prog=handoffProgress(p);
+  document.getElementById("handoffStatus").textContent=prog.allDone?"Handoff complete":(prog.done+"/"+prog.total+" done");
+  document.getElementById("handoffCount").textContent=prog.done+"/"+prog.total;
+  document.getElementById("hfBaseline").value=p.handoff.baseline||"";
+  var list=document.getElementById("handoffList");
+  list.innerHTML=HANDOFF_ITEMS.map(function(it){
+    var rec=p.handoff.items[it.id]||{};
+    return '<div class="verifyitem'+(rec.done?" done":"")+'" data-hitem="'+it.id+'">'+
+      '<input type="checkbox" data-hcheck="'+it.id+'"'+(rec.done?" checked":"")+'>'+
+      '<div class="vbody"><div class="vlabel">'+esc(it.label)+(rec.ts?' <span class="note">('+esc(new Date(rec.ts).toLocaleDateString())+')</span>':"")+'</div>'+
+      '<input class="vnote" type="text" data-hnote="'+it.id+'" placeholder="Note (optional)" value="'+esc(rec.note||"")+'"></div>'+
+    "</div>";
+  }).join("");
+  Array.prototype.forEach.call(list.querySelectorAll("[data-hcheck]"),function(el){
+    el.addEventListener("change",function(){
+      var id=el.getAttribute("data-hcheck");
+      p.handoff.items[id]=p.handoff.items[id]||{note:""};
+      p.handoff.items[id].done=el.checked;
+      p.handoff.items[id].ts=el.checked?nowISO():null;
+      saveState();renderHandoff(p);renderSlots();
+    });
+  });
+  Array.prototype.forEach.call(list.querySelectorAll("[data-hnote]"),function(el){
+    el.addEventListener("change",function(){
+      var id=el.getAttribute("data-hnote");
+      p.handoff.items[id]=p.handoff.items[id]||{done:false};
+      p.handoff.items[id].note=el.value.trim();
+      saveState();
+    });
+  });
+}
+document.getElementById("hfBaseline").addEventListener("change",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  p.handoff=p.handoff||{baseline:"",items:{}};
+  p.handoff.baseline=document.getElementById("hfBaseline").value.trim();
+  saveState();
 });
 
 /* ---------- prospect notes ---------- */
