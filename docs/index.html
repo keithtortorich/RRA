@@ -281,6 +281,8 @@ button{cursor:pointer;-webkit-appearance:none}
       <div class="card" style="margin-top:14px">
         <div class="head">Bench<small id="benchCount"></small></div>
         <p class="note">Raw contacts you've researched but haven't put into an active slot yet. Landing five real conversations takes more than five contacts — work this list, promote one in when a slot frees up.</p>
+        <div class="field"><textarea id="bfDossier" rows="3" placeholder="Paste a dossier (Company:, City:, Contact:, Phone:, Website:, Source:, Notes:) and parse it into the fields below."></textarea></div>
+        <button class="btn outline block" id="btnParseBenchDossier" type="button">Parse into fields</button>
         <div class="g2">
           <div class="field"><label>Company</label><input id="bfCompany"></div>
           <div class="field"><label>City</label><input id="bfCity"></div>
@@ -398,6 +400,12 @@ button{cursor:pointer;-webkit-appearance:none}
     <div class="sheetbody">
 
       <div class="subpanel active" id="s-overview">
+        <div class="card">
+          <div class="head">Paste dossier</div>
+          <p class="note">Paste your research write-up (labeled lines like Company:, City:, Contact:, Phone:, Website:, Source:, Notes:). Parse fills the fields below — nothing is overwritten for a label the dossier didn't include.</p>
+          <div class="field"><textarea id="pfDossier" rows="4" placeholder="Company: Reed Heating and Air&#10;City: Melissa, TX&#10;Contact: Eric Reed&#10;Phone: (972) 555-1234&#10;Website: https://reedhvac.com&#10;Source: Google Maps + Yelp reviews&#10;Notes: Site claims 24/7 but reviews complain about missed after-hours calls — needs verifying."></textarea></div>
+          <button class="btn outline block" id="btnParseDossier" type="button">Parse into fields</button>
+        </div>
         <div class="g2">
           <div class="field"><label>Company</label><input id="pfCompany"></div>
           <div class="field"><label>City / State</label><input id="pfCity"></div>
@@ -605,6 +613,51 @@ function fmtDate(d){if(!d)return "";var dt=(d instanceof Date)?d:new Date(d);if(
 function addDays(dateStr,days){var d=new Date(dateStr+"T00:00:00");d.setDate(d.getDate()+days);return d;}
 function daysBetween(a,b){return Math.round((b-a)/86400000);}
 function esc(s){var d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML;}
+
+/* ---------- dossier parser: paste labeled research notes, fill fields in one step ---------- */
+var DOSSIER_FIELD_MAP=[
+  {key:"company",labels:["company","business","business name","name","prospect"]},
+  {key:"city",labels:["city","city/state","location","market"]},
+  {key:"contact",labels:["contact","contact name","owner","owner name"]},
+  {key:"phone",labels:["phone","phone number","tel","telephone"]},
+  {key:"website",labels:["website","site","url","web"]},
+  {key:"email",labels:["email","e-mail"]},
+  {key:"source",labels:["source","evidence source","found via","research source"]},
+  {key:"notes",labels:["notes","why","why this target","open questions","questions","evidence","observations"]}
+];
+var SINGLE_LINE_FIELDS={company:1,city:1,contact:1,phone:1,website:1,email:1};
+function parseDossier(text){
+  var out={};
+  var lastKey=null;
+  (text||"").split(/\r?\n/).forEach(function(line){
+    var m=line.match(/^\s*([A-Za-z][A-Za-z \/\-]{1,30}?)\s*[:\-–]\s*(.*)$/);
+    var matchedKey=null;
+    if(m){
+      var label=m[1].trim().toLowerCase();
+      for(var i=0;i<DOSSIER_FIELD_MAP.length;i++){
+        if(DOSSIER_FIELD_MAP[i].labels.indexOf(label)>=0){matchedKey=DOSSIER_FIELD_MAP[i].key;break;}
+      }
+    }
+    if(matchedKey){
+      var val=m[2].trim();
+      out[matchedKey]=out[matchedKey]?out[matchedKey]+(val?"\n"+val:""):val;
+      lastKey=matchedKey;
+    }else if(lastKey&&!SINGLE_LINE_FIELDS[lastKey]&&line.trim()){
+      out[lastKey]=(out[lastKey]?out[lastKey]+"\n":"")+line.trim();
+    }
+  });
+  return out;
+}
+function applyDossierToFields(parsed,fieldMap){
+  var filled=[];
+  Object.keys(fieldMap).forEach(function(key){
+    if(parsed[key]){
+      var el=document.getElementById(fieldMap[key]);
+      if(el){el.value=parsed[key];filled.push(key);}
+    }
+  });
+  return filled;
+}
 
 function defaultState(){
   return {version:2,prospects:[],bench:[],activities:[],generalNotes:[],settings:{}};
@@ -954,8 +1007,17 @@ document.getElementById("btnAddBench").addEventListener("click",function(){
     website:document.getElementById("bfWebsite").value.trim(),email:"",source:"",
     notes:document.getElementById("bfWhy").value.trim(),addedAt:nowISO()
   });
-  ["bfCompany","bfCity","bfContact","bfPhone","bfWebsite","bfWhy"].forEach(function(id){document.getElementById(id).value="";});
+  ["bfCompany","bfCity","bfContact","bfPhone","bfWebsite","bfWhy","bfDossier"].forEach(function(id){document.getElementById(id).value="";});
   saveState();renderBench();toast("Added to bench");
+});
+document.getElementById("btnParseBenchDossier").addEventListener("click",function(){
+  var raw=document.getElementById("bfDossier").value;
+  if(!raw.trim()){toast("Paste a dossier first");return;}
+  var parsed=parseDossier(raw);
+  var filled=applyDossierToFields(parsed,{company:"bfCompany",city:"bfCity",contact:"bfContact",phone:"bfPhone",website:"bfWebsite"});
+  var why=[parsed.source,parsed.notes].filter(Boolean).join("\n");
+  if(why){document.getElementById("bfWhy").value=why;filled.push("why/source");}
+  toast(filled.length?"Parsed "+filled.length+" field"+(filled.length===1?"":"s"):"No recognized labels found — check field names");
 });
 function promoteBench(id){
   if(STATE.prospects.length>=MAX_SLOTS){toast("Five slots are full — free one first");return;}
@@ -982,6 +1044,7 @@ function openProspectSheet(id){
   currentProspectId=id;
   var p=id?prospectById(id):null;
   document.getElementById("sheetTitle").textContent=p?p.company:"Add prospect";
+  document.getElementById("pfDossier").value="";
   document.getElementById("pfCompany").value=p?p.company:"";
   document.getElementById("pfCity").value=p?p.city||"":"";
   document.getElementById("pfWebsite").value=p?p.website||"":"";
@@ -1009,6 +1072,14 @@ function openProspectSheet(id){
 }
 function closeProspectSheet(){document.getElementById("prospectOverlay").classList.add("hidden");currentProspectId=null;}
 document.getElementById("btnCloseSheet").addEventListener("click",closeProspectSheet);
+document.getElementById("btnParseDossier").addEventListener("click",function(){
+  var raw=document.getElementById("pfDossier").value;
+  if(!raw.trim()){toast("Paste a dossier first");return;}
+  var parsed=parseDossier(raw);
+  var filled=applyDossierToFields(parsed,{company:"pfCompany",city:"pfCity",contact:"pfContact",phone:"pfPhone",website:"pfWebsite",email:"pfEmail",source:"pfSource"});
+  if(parsed.notes){document.getElementById("pfWhy").value=parsed.notes;filled.push("notes");}
+  toast(filled.length?"Parsed "+filled.length+" field"+(filled.length===1?"":"s")+" — review, then save":"No recognized labels found — check field names");
+});
 
 document.getElementById("pfState").addEventListener("change",function(){
   toggleSentDateField();
