@@ -30,6 +30,9 @@ Until five real proposals answer that question, more platform work is out of sco
   delivered fix into a documented (not estimated) recovered-revenue number.
 - [docs/VALIDATION_SCOREBOARD.md](docs/VALIDATION_SCOREBOARD.md): the three
   gates (SELL / PROVE / REPEAT), the batch ladder, and the scoreboard template.
+- [docs/NETBUILD_REUSE_STRATEGY.md](docs/NETBUILD_REUSE_STRATEGY.md): what to
+  reuse from NetBuild.Pro and when — gated by RRA's own SELL/PROVE/REPEAT
+  stages, not merged in now.
 - [pipeline.md](pipeline.md): prospect tracking template.
 - [SALES TOOL.html](SALES%20TOOL.html): the sales cockpit — five-prospect board,
   revenue calculator, evidence, outreach, $997 offer builder, Call Mode,
