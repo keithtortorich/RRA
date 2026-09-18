@@ -109,6 +109,18 @@ button{cursor:pointer;-webkit-appearance:none}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 @media(max-width:480px){.g2,.g3{grid-template-columns:1fr 1fr}}
+@media print{
+  body *{visibility:hidden}
+  #packetPreview,#packetPreview *{visibility:visible}
+  #packetPreview{position:absolute;top:0;left:0;width:100%;padding:24px;color:#111;background:#fff}
+  #packetPreview .pkitem{border-color:#ccc}
+  #packetPreview .pkhead{color:#111}
+  #packetPreview .pksub,#packetPreview .pknote{color:#555}
+}
+.pkitem{border:1px solid var(--rra-border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.pkhead{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-weight:700;color:var(--rra-bone)}
+.pksub{font-size:11px;color:var(--rra-muted);margin-top:3px}
+.pknote{font-size:12.5px;margin-top:4px;color:var(--rra-bone)}
 .btn{border:1px solid transparent;border-radius:var(--r);padding:13px 16px;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;min-height:46px;font-family:var(--font-heading)}
 .btn.block{width:100%;margin-top:8px}
 .primary{background:var(--rra-bone);color:var(--rra-obsidian)}
@@ -403,6 +415,7 @@ button{cursor:pointer;-webkit-appearance:none}
       <button class="subtab" data-s="evidence">Evidence</button>
       <button class="subtab" data-s="outreach">Outreach</button>
       <button class="subtab" data-s="offer">Implementation</button>
+      <button class="subtab" data-s="packet">Client Packet</button>
       <button class="subtab" data-s="pnotes">Notes</button>
     </div>
     <div class="sheetbody">
@@ -517,6 +530,34 @@ button{cursor:pointer;-webkit-appearance:none}
 
       <div class="subpanel" id="s-offer">
         <div id="offerOut"></div>
+      </div>
+
+      <div class="subpanel" id="s-packet">
+        <div class="card">
+          <div class="head">Client Packet</div>
+          <p class="note">One page for the client: every recorded observation with its source and date beside it. Pulled straight from the Evidence tab — nothing added, nothing hidden.</p>
+          <div id="packetPreview"></div>
+        </div>
+        <div class="card">
+          <button class="btn outline block" id="btnCopyPacket">Copy message</button>
+          <button class="btn outline block" id="btnPrintPacket">Print / Save PDF</button>
+        </div>
+        <div class="card">
+          <div class="head">Mark as sent</div>
+          <div class="g2">
+            <div class="field"><label>Sent date</label><input id="pkSentDate" type="date"></div>
+            <div class="field"><label>Method</label>
+              <select id="pkMethod">
+                <option value="email">Email</option>
+                <option value="call">Phone / call</option>
+                <option value="text">Text</option>
+                <option value="in_person">In person</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn primary block" id="btnMarkPacketSent">Mark packet sent</button>
+          <div class="note" id="packetSentStatus"></div>
+        </div>
       </div>
 
       <div class="subpanel" id="s-pnotes">
@@ -1112,6 +1153,7 @@ function openProspectSheet(id){
   if(p)renderEvidence(p);
   if(p)renderOutreachPanel(p);
   if(p)renderOfferPanel(p);
+  renderPacket(p);
   if(p)renderProspectNotes(p);
   document.getElementById("prospectOverlay").classList.remove("hidden");
 }
@@ -1281,7 +1323,7 @@ document.getElementById("btnAddEvidence").addEventListener("click",function(){
   if(!p.topLeakId||ev.impact>((topEvidence(p)||{}).impact||0)){p.topLeakId=ev.id;}
   saveState();
   document.getElementById("cIssue").value="";document.getElementById("cSource").value="";
-  renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();
+  renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderPacket(p);renderSlots();
   toast("Evidence added");
 });
 function renderVerifyChecklist(p){
@@ -1309,7 +1351,7 @@ function renderVerifyChecklist(p){
       p.verify[id]=p.verify[id]||{note:""};
       p.verify[id].done=el.checked;
       p.verify[id].ts=el.checked?nowISO():null;
-      saveState();renderVerifyChecklist(p);renderSlots();renderOutreachPanel(p);
+      saveState();renderVerifyChecklist(p);renderSlots();renderOutreachPanel(p);renderPacket(p);
     });
   });
   Array.prototype.forEach.call(list.querySelectorAll("[data-vnote]"),function(el){
@@ -1344,14 +1386,14 @@ function renderEvidence(p){
       "</div></div>";
   }).join("");
   Array.prototype.forEach.call(list.querySelectorAll("[data-pin]"),function(el){
-    el.addEventListener("click",function(){p.topLeakId=el.getAttribute("data-pin");saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();});
+    el.addEventListener("click",function(){p.topLeakId=el.getAttribute("data-pin");saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderPacket(p);renderSlots();});
   });
   Array.prototype.forEach.call(list.querySelectorAll("[data-rmev]"),function(el){
     el.addEventListener("click",function(){
       var id=el.getAttribute("data-rmev");
       p.evidence=p.evidence.filter(function(e){return e.id!==id;});
       if(p.topLeakId===id)p.topLeakId=null;
-      saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderSlots();
+      saveState();renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderPacket(p);renderSlots();
     });
   });
 }
@@ -1449,6 +1491,76 @@ function renderOfferPanel(p){
     '<div class="card"><div class="head">Better / Best — Broader Recovery Scope</div>'+
     '<p class="note"><b>Better:</b> $5,000 setup + $2,500/month — implement the top 3 opportunities, 90-day roadmap.<br><b>Best:</b> $7,500/month — full ongoing revenue recovery management.</p></div>';
 }
+
+/* ---------- client packet (Share stage) ---------- */
+function packetEvidence(p){
+  return evidenceSorted(p);
+}
+function buildPacketText(p){
+  var ev=packetEvidence(p);
+  var lines=[];
+  lines.push(p.company+" — Revenue Recovery Scan");
+  lines.push("Prepared "+new Date().toLocaleDateString());
+  lines.push("");
+  if(!ev.length){
+    lines.push("No findings recorded yet.");
+    return lines.join("\n");
+  }
+  lines.push("FINDINGS");
+  ev.forEach(function(e,i){
+    lines.push((i+1)+". "+e.issue);
+    lines.push("   Source: "+(e.source||"observed directly")+" ("+new Date(e.ts).toLocaleDateString()+") — "+e.quality);
+    lines.push("   Estimated impact: "+fmtMoney(e.impact)+"/mo ("+fmtMoney(e.impact*12)+"/yr)");
+    lines.push("");
+  });
+  var prog=verifyProgress(p);
+  if(!prog.allDone){
+    lines.push("Note: verification in progress ("+prog.done+"/"+prog.total+") — figures above are subject to confirmation.");
+    lines.push("");
+  }
+  lines.push("Next step: a fixed-fee $997 implementation of the top validated leak, or a free walkthrough of these findings.");
+  return lines.join("\n");
+}
+function renderPacket(p){
+  var prev=document.getElementById("packetPreview");
+  var statusEl=document.getElementById("packetSentStatus");
+  if(!p){prev.innerHTML="";statusEl.textContent="";return;}
+  var ev=packetEvidence(p);
+  var prog=verifyProgress(p);
+  var banner=prog.allDone?
+    '<div class="readyflag"><span>&#10003;</span><span><b>Ready to share.</b> Verification checklist complete.</span></div>':
+    (ev.length?'<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+prog.done+'/'+prog.total+').</b> The figures below are still subject to confirmation — that note is included in the copied/printed packet.</span></div>':"");
+  var body;
+  if(!ev.length){
+    body='<p class="note">No findings recorded yet. Add evidence on the Evidence tab first.</p>';
+  }else{
+    body=ev.map(function(e){
+      return '<div class="pkitem"><div class="pkhead"><span>'+esc(e.issue)+'</span>'+qualityBadge(e.quality)+"</div>"+
+        '<div class="pksub">Source: '+esc(e.source||"observed directly")+" &middot; "+esc(new Date(e.ts).toLocaleDateString())+"</div>"+
+        '<div class="pknote">'+fmtMoney(e.impact)+"/mo &middot; "+fmtMoney(e.impact*12)+"/yr</div></div>";
+    }).join("");
+  }
+  prev.innerHTML='<div class="pkhead" style="margin-bottom:4px">'+esc(p.company)+'<span class="pksub">'+esc(new Date().toLocaleDateString())+"</span></div>"+banner+body;
+  var pk=p.packet||{};
+  statusEl.textContent=pk.sentAt?("Sent "+new Date(pk.sentAt).toLocaleDateString()+" via "+(pk.method||"unknown")):"Not yet sent.";
+  document.getElementById("pkSentDate").value=pk.sentAt?pk.sentAt.slice(0,10):todayISO();
+  document.getElementById("pkMethod").value=pk.method||"email";
+}
+document.getElementById("btnCopyPacket").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  copyText(buildPacketText(p));
+});
+document.getElementById("btnPrintPacket").addEventListener("click",function(){
+  window.print();
+});
+document.getElementById("btnMarkPacketSent").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  var date=document.getElementById("pkSentDate").value||todayISO();
+  var method=document.getElementById("pkMethod").value;
+  p.packet={sentAt:new Date(date).toISOString(),method:method};
+  logActivity(p.id,"proposal","Client packet sent via "+method);
+  saveState();renderPacket(p);renderActivity();toast("Packet marked sent");
+});
 
 /* ---------- prospect notes ---------- */
 function renderProspectNotes(p){
