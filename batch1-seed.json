@@ -24,7 +24,9 @@
       "followupsSent": 0,
       "outcome": null,
       "wonDetails": null,
-      "calc": {"mode": "missed"},
+      "calc": {
+        "mode": "missed"
+      },
       "evidence": [
         {
           "id": "seed-ev-exodus-1",
@@ -63,7 +65,9 @@
       "followupsSent": 0,
       "outcome": null,
       "wonDetails": null,
-      "calc": {"mode": "missed"},
+      "calc": {
+        "mode": "missed"
+      },
       "evidence": [
         {
           "id": "seed-ev-ample-1",
@@ -102,7 +106,9 @@
       "followupsSent": 0,
       "outcome": null,
       "wonDetails": null,
-      "calc": {"mode": "missed"},
+      "calc": {
+        "mode": "missed"
+      },
       "evidence": [
         {
           "id": "seed-ev-banderson-1",
@@ -141,7 +147,9 @@
       "followupsSent": 0,
       "outcome": null,
       "wonDetails": null,
-      "calc": {"mode": "missed"},
+      "calc": {
+        "mode": "missed"
+      },
       "evidence": [],
       "topLeakId": null
     },
@@ -168,7 +176,9 @@
       "followupsSent": 0,
       "outcome": null,
       "wonDetails": null,
-      "calc": {"mode": "missed"},
+      "calc": {
+        "mode": "missed"
+      },
       "evidence": [],
       "topLeakId": null
     }
@@ -181,5 +191,115 @@
       "ts": "2026-09-17T00:14:23.000Z"
     }
   ],
-  "settings": {}
+  "settings": {},
+  "bench": [
+    {
+      "id": "bench-chillzone",
+      "company": "Chillzone Refrigeration & Air Conditioning",
+      "city": "Fulshear, TX",
+      "contact": "",
+      "phone": "832-599-0677",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Owner not yet identified; website not found yet.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-aba-one",
+      "company": "Aba One Plumbing",
+      "city": "Fulshear, TX",
+      "contact": "",
+      "phone": "346-509-2900",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Plumbing-primary — confirm they also do residential HVAC before qualifying. Owner not yet identified; website not confirmed.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-kmi",
+      "company": "KMI A/C and Heating",
+      "city": "Celina, TX",
+      "contact": "",
+      "phone": "972-382-1110",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Website confirmed to exist but URL and owner not yet identified.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-tl-central",
+      "company": "T L Central Heating & Air",
+      "city": "Celina, TX",
+      "contact": "Tim Looper (BBB-confirmed)",
+      "phone": "972-382-2663",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Website not confirmed.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-blessed-air",
+      "company": "Blessed Air & Refrigeration Service",
+      "city": "Celina, TX",
+      "contact": "Terry Dorris (owner)",
+      "phone": "972-382-2479",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Website not found yet.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-air-rescue",
+      "company": "Air Rescue Heating & Cooling",
+      "city": "Celina, TX",
+      "contact": "",
+      "phone": "469-294-2616",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Owner not yet identified; website not confirmed.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-dyno",
+      "company": "Dyno Heating & Cooling",
+      "city": "Melissa, TX",
+      "contact": "Marcus Stevenson (BBB-confirmed)",
+      "phone": "972-838-7075",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Website not found yet.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-arrowhead",
+      "company": "Arrowhead Air Solutions",
+      "city": "Melissa, TX",
+      "contact": "Randy S. Landers (owner/license holder)",
+      "phone": "469-993-8283",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Website not found yet.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "bench-h2-mechanical",
+      "company": "H2 Mechanical Services",
+      "city": "Melissa, TX",
+      "contact": "Ryan (owner)",
+      "phone": "",
+      "website": "",
+      "email": "",
+      "source": "Public listing research (BBB/company site) — see pipeline.md",
+      "notes": "Phone not yet identified — lowest-priority bench entry until found.",
+      "addedAt": "2026-09-18T00:00:00.000Z"
+    }
+  ]
 }
