@@ -1,0 +1,6 @@
+{
+  "name": "rra-cockpit-tests",
+  "private": true,
+  "scripts": {"test:js": "node tests_js/cockpit.test.mjs"},
+  "devDependencies": {"jsdom": "^30.1.0"}
+}
