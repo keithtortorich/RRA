@@ -60,10 +60,12 @@ button{cursor:pointer;-webkit-appearance:none}
 ::-webkit-scrollbar{width:0;height:0}
 ::selection{background:var(--rra-brass);color:var(--rra-obsidian)}
 
-/* financial figures: monospace, tabular, no invented precision */
+/* financial figures: Source Sans 3 with tabular lining figures per brand contract
+   (Source Code Pro is reserved for literal audit/scan IDs, none of which render here) */
 .mono,.money,#calcResult,#calcResultAnnual,.stat strong,.evrow .impact,.callimpact,.pcard .leak,.impact-lg{
-  font-family:var(--font-mono);
+  font-family:var(--font-body);
   font-variant-numeric:tabular-nums;
+  font-weight:600;
   letter-spacing:-.01em;
 }
 
@@ -72,7 +74,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .diagrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .diagrow-sub{margin-top:10px;padding-top:10px;border-top:1px solid var(--rra-border)}
 .diaglabel{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--rra-muted);font-weight:700}
-.diagqual{color:var(--rra-brass);font-family:var(--font-mono);text-transform:uppercase}
+.diagqual{color:var(--rra-brass);font-family:var(--font-body);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .diagfigure{font-size:28px;font-weight:600;color:var(--rra-red-text)}
 .diagfigure-sm{font-size:17px}
 
@@ -86,8 +88,9 @@ button{cursor:pointer;-webkit-appearance:none}
 .lockup .pro{font-family:var(--font-display);font-weight:500;font-size:12px;letter-spacing:.08em;color:var(--rra-brass)}
 .lockup .full{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rra-muted);font-weight:600}
 .lockup .product{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rra-brass);font-weight:700;margin-top:3px;font-family:var(--font-heading)}
+.lockup .tagline{font-size:10px;font-style:italic;color:var(--rra-muted);font-family:var(--font-display);margin-top:2px}
 .lockup .meta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap}
-.lockup .meta span{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;color:var(--rra-muted);border:1px solid var(--rra-border);border-radius:var(--r);padding:2px 6px}
+.lockup .meta span{font-family:var(--font-body);font-weight:600;font-size:9px;letter-spacing:.04em;color:var(--rra-muted);border:1px solid var(--rra-border);border-radius:var(--r);padding:2px 6px}
 .top .right{display:flex;gap:8px;align-items:center}
 .iconbtn{background:transparent;border:1px solid var(--rra-brass);color:var(--rra-brass);border-radius:var(--r);padding:9px 12px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;min-height:40px}
 .iconbtn:active{background:var(--rra-brass-bg)}
@@ -137,7 +140,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .pill{border:1px solid var(--rra-border);background:transparent;color:var(--rra-bone);border-radius:var(--r);padding:9px 13px;font-weight:600;font-size:11.5px;min-height:38px}
 .pill.on{background:var(--rra-brass);color:var(--rra-obsidian);border-color:var(--rra-brass)}
 .pill:disabled{opacity:.45;cursor:not-allowed}
-.badge{font-family:var(--font-mono);font-size:9.5px;font-weight:600;padding:4px 8px;border-radius:var(--r);background:var(--rra-slate2);border:1px solid var(--rra-border);color:var(--rra-muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge{font-family:var(--font-body);font-size:9.5px;font-weight:700;padding:4px 8px;border-radius:var(--r);background:var(--rra-slate2);border:1px solid var(--rra-border);color:var(--rra-muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .badge.known{background:var(--rra-brass-bg);color:var(--rra-brass);border-color:var(--rra-brass)}
 .badge.estimated{background:var(--rra-slate2);color:var(--rra-bone);border-color:var(--rra-border)}
 .badge.benchmark{background:var(--rra-slate2);color:var(--rra-muted);border-color:var(--rra-border);border-style:dashed}
@@ -173,7 +176,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .pcard .leak b{font-family:var(--font-body);color:var(--rra-bone);font-weight:600;display:block;margin-bottom:3px}
 .pcard .followrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--rra-bone)}
 .pcard .nextrow{margin-top:9px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--rra-bone);border-top:1px solid var(--rra-border);padding-top:9px}
-.pcard .nextrow .nextlabel{color:var(--rra-muted);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em;font-family:var(--font-mono);flex-shrink:0}
+.pcard .nextrow .nextlabel{color:var(--rra-muted);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em;font-weight:700;font-family:var(--font-body);flex-shrink:0}
 .warnflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-amber-bg);border:1px solid var(--rra-amber);border-radius:var(--r);color:var(--rra-amber);font-size:11.5px;line-height:1.4}
 .warnflag b{color:var(--rra-amber)}
 .readyflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-green-bg);border:1px solid var(--rra-green);border-radius:var(--r);color:var(--rra-green-text);font-size:11.5px;line-height:1.4}
@@ -206,7 +209,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .evrow b{color:var(--rra-bone)}
 .toprow{border-color:var(--rra-brass);border-left:3px solid var(--rra-brass)}
 
-.pitchbox{white-space:pre-wrap;background:var(--rra-slate);border:1px solid var(--rra-border);color:var(--rra-bone);padding:16px;border-radius:var(--r);line-height:1.6;font-size:13px;font-family:var(--font-mono);margin:10px 0}
+.pitchbox{white-space:pre-wrap;background:var(--rra-slate);border:1px solid var(--rra-border);color:var(--rra-bone);padding:16px;border-radius:var(--r);line-height:1.6;font-size:13px;font-family:var(--font-body);margin:10px 0}
 .pitchtypes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
 .ptype{padding:10px;border:1px solid var(--rra-border);border-radius:var(--r);background:transparent;color:var(--rra-bone);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;min-height:42px;font-family:var(--font-heading)}
 .ptype.active{background:var(--rra-brass);color:var(--rra-obsidian);border-color:var(--rra-brass)}
@@ -255,6 +258,7 @@ button{cursor:pointer;-webkit-appearance:none}
       </div>
       <span class="full">Revenue Recovery Firm</span>
       <span class="product">Sizzle &middot; Sales Tool</span>
+      <span class="tagline">Find the leak. Recover the revenue.</span>
       <div class="meta">
         <span>Residential HVAC</span>
         <span>Cohort 01</span>
@@ -1645,7 +1649,7 @@ function renderOfferPanel(p){
       "</div>"+
       '<div class="row" style="margin-top:8px">'+qualityBadge(top.quality)+"</div>"+offerWarn+"</div>"+
     '<div class="field"><label>Recommended Recovery</label><div>'+esc(action)+"</div></div>"+
-    '<div class="field"><label>Fixed-Fee Implementation</label><div style="font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--rra-brass)">$997 fixed fee</div></div>'+
+    '<div class="field"><label>Fixed-Fee Implementation</label><div style="font-family:var(--font-body);font-size:22px;font-weight:700;color:var(--rra-brass)">$997 fixed fee</div></div>'+
     '<div class="field"><label>Included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
       "<li>Deep diagnosis of the top validated leak</li><li>Implementation of the single fix above</li><li>30-day measurement of recovered activity</li></ul></div>"+
     '<div class="field"><label>Not included</label><ul style="padding-left:18px;font-size:13px;line-height:1.7">'+
