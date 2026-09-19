@@ -1,5 +1,8 @@
 # NETBUILD.PRO Brand Implementation Handoff
 
+> **SUPERSEDED — 2026-09-19.** The NETBUILD.PRO / Sizzle direction below was reversed by founder decision. Current customer-facing brand is **RRA — Revenue Recovery Agency** (product: **RRA Diagnostic Terminal**). This document remains only as historical context for PR #19/#20; `docs/index.html` is the current implementation.
+
+
 **Version:** 1.1  
 **Date:** September 19, 2026  
 **Status:** Corrected, validated, and ready for implementation  
