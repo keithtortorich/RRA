@@ -1,0 +1,25 @@
+/* NETBUILD.PRO Brand Tokens. The --rra-* namespace is retained as an
+   intentional internal compatibility contract. */
+
+:root {
+  --rra-ink: #12110f;
+  --rra-ink-800: #1c1b18;
+  --rra-ink-700: #2a2824;
+  --rra-stone: #6f6a62;
+  --rra-rule: #d8d2c6;
+  --rra-bone: #f4f1ea;
+  --rra-paper: #faf7f1;
+  --rra-brass: #c5a572;
+  --rra-brass-light: #d4b88a;
+  --rra-brass-deep: #6e5428;
+  --rra-recovered: #2f5a40;
+  --rra-recovered-soft: #e3ede6;
+  --rra-leak: #8f2e28;
+  --rra-leak-soft: #f3e4e2;
+
+  --rra-font-display: "Newsreader", "Libre Baskerville", Georgia, serif;
+  --rra-font-body: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+  --rra-font-mono: "Source Code Pro", ui-monospace, monospace;
+
+  --rra-radius: 2px;
+}
