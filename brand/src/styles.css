@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Newsreader", "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --font-sans: "Source Sans 3", "Source Sans Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-ink: #12110f;
+  --color-ink-800: #1c1b18;
+  --color-ink-700: #2a2824;
+  --color-stone: #6f6a62;
+  --color-rule: #d8d2c6;
+  --color-bone: #f4f1ea;
+  --color-paper: #faf7f1;
+  --color-brass: #c5a572;
+  --color-brass-light: #d4b88a;
+  --color-brass-deep: #6e5428;
+  --color-recovered: #2f5a40;
+  --color-recovered-soft: #e3ede6;
+  --color-leak: #8f2e28;
+  --color-leak-soft: #f3e4e2;
+
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius: 2px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-bone);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: var(--color-brass);
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  .netbuild-wordmark {
+    letter-spacing: 0.08em;
+  }
+
+  .netbuild-pro {
+    margin-left: 0.08em;
+    color: var(--color-brass);
+    font-size: 0.56em;
+    letter-spacing: 0.08em;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .opsz-display {
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 72;
+  }
+
+  .hairline {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-ink) 12%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
