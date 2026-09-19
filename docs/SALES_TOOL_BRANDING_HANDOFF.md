@@ -1,5 +1,8 @@
 # NETBUILD.PRO Sales Tool Branding Handoff
 
+> **SUPERSEDED — 2026-09-19.** Reversed by founder decision. Current brand is **RRA — Revenue Recovery Agency / RRA Diagnostic Terminal**. Historical record only; `docs/index.html` is current.
+
+
 **Version:** 1.0  
 **Date:** September 19, 2026  
 **Applies to:** `docs/index.html` and the `SALES TOOL.html` symlink  
