@@ -3,48 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B0E14">
-<title>RRA Diagnostic Terminal</title>
-<!-- Placeholder favicon (brass monogram on obsidian). Replace with RRA_Monogram_Favicon.png when available. -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B0E14'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='16' font-weight='700' fill='%23C5A059' text-anchor='middle'%3ERA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#12110F">
+<title>NETBUILD.PRO — Sizzle Sales Tool</title>
+<!-- Placeholder favicon. Replace with the approved NETBUILD.PRO Seal asset when available. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2312110F'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='13' font-weight='600' fill='%23C5A572' text-anchor='middle'%3ENB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   RRA BRAND TOKENS — Revenue Recovery Agency / Diagnostic Terminal
+   NETBUILD.PRO BRAND TOKENS — Sizzle Sales Tool
    Single source of truth for color/type. Swap values here only;
    nothing below this block should hard-code a brand color or font.
+   Custom-property names keep the internal "rra" prefix (repo history,
+   storage keys) — never rendered to the customer; visible copy is
+   NETBUILD.PRO throughout.
    ============================================================ */
 :root{
-  /* -- surfaces -- */
-  --rra-obsidian:#0B0E14;
-  --rra-slate:#1E222B;
-  --rra-slate2:#262b36;
-  --rra-border:#3A3F4D;
-  /* -- ink -- */
-  --rra-bone:#F4F4F0;
-  --rra-white:#FFFFFF;
-  --rra-muted:#8A909A;
+  /* -- surfaces (Ink) -- */
+  --rra-obsidian:#12110F;
+  --rra-slate:#1C1B18;
+  --rra-slate2:#242320;
+  --rra-border:#2A2824;
+  /* -- ink (readouts) -- */
+  --rra-bone:#F4F1EA;
+  --rra-white:#FAF7F1;
+  --rra-muted:#6F6A62;
   /* -- accent (primary brand) -- */
-  --rra-brass:#C5A059;
-  --rra-brass-bg:rgba(197,160,89,.12);
+  --rra-brass:#C5A572;
+  --rra-brass-deep:#6E5428;
+  --rra-brass-bg:rgba(197,165,114,.14);
   /* -- semantic: financial state only, never decorative -- */
-  --rra-green:#05B269;
-  --rra-green-bg:rgba(5,178,105,.12);
-  --rra-red:#E5484D;
-  --rra-red-text:#FF8489;
-  --rra-red-bg:rgba(229,72,77,.14);
-  --rra-amber:#F5A623;
-  --rra-amber-bg:rgba(245,166,35,.14);
+  --rra-green:#2F5A40;
+  --rra-green-text:#7FB393;
+  --rra-green-bg:rgba(47,90,64,.22);
+  --rra-red:#8F2E28;
+  --rra-red-text:#E28A83;
+  --rra-red-bg:rgba(143,46,40,.22);
+  --rra-amber:#C9862C;
+  --rra-amber-bg:rgba(201,134,44,.16);
   /* -- type -- */
-  --font-display:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-heading:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  --font-mono:'JetBrains Mono','Space Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --font-display:'Newsreader',Georgia,'Times New Roman',serif;
+  --font-heading:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'Source Code Pro',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   /* -- geometry: restrained, architectural, not consumer-app rounded -- */
-  --r:4px;
-  --r-lg:6px;
+  --r:2px;
+  --r-lg:2px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -74,13 +79,12 @@ button{cursor:pointer;-webkit-appearance:none}
 /* -- top bar / brand lockup -- */
 .top{background:var(--rra-obsidian);border-bottom:1px solid var(--rra-border);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
 .lockup{display:flex;flex-direction:column;gap:2px}
-.lockup .mark{display:flex;align-items:baseline;gap:8px}
+.lockup .mark{display:flex;align-items:baseline;gap:1px}
 .lockup .mark-img{height:22px;width:auto;display:block}
-.lockup .rra{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:.02em;color:var(--rra-bone)}
-.lockup .rra em{font-style:normal;color:var(--rra-brass)}
-.lockup .gap{display:inline-block;width:2px;height:14px;background:var(--rra-brass);margin:0 1px;transform:skewX(-12deg)}
+.lockup .nb{font-family:var(--font-display);font-weight:500;font-size:19px;letter-spacing:.08em;color:var(--rra-bone)}
+.lockup .pro{font-family:var(--font-display);font-weight:500;font-size:12px;letter-spacing:.08em;color:var(--rra-brass)}
 .lockup .full{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rra-muted);font-weight:600}
-.lockup .product{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rra-brass);font-weight:700;margin-top:3px}
+.lockup .product{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rra-brass);font-weight:700;margin-top:3px;font-family:var(--font-heading)}
 .lockup .meta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap}
 .lockup .meta span{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;color:var(--rra-muted);border:1px solid var(--rra-border);border-radius:var(--r);padding:2px 6px}
 .top .right{display:flex;gap:8px;align-items:center}
@@ -137,7 +141,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .badge.estimated{background:var(--rra-slate2);color:var(--rra-bone);border-color:var(--rra-border)}
 .badge.benchmark{background:var(--rra-slate2);color:var(--rra-muted);border-color:var(--rra-border);border-style:dashed}
 .badge.state{background:var(--rra-slate2);color:var(--rra-bone);border-color:var(--rra-border)}
-.badge.won{background:var(--rra-green-bg);color:var(--rra-green);border-color:var(--rra-green)}
+.badge.won{background:var(--rra-green-bg);color:var(--rra-green-text);border-color:var(--rra-green)}
 .badge.lost{background:var(--rra-red-bg);color:var(--rra-red-text);border-color:var(--rra-red)}
 .badge.overdue{background:var(--rra-red-bg);color:var(--rra-red-text);border-color:var(--rra-red)}
 .badge.today{background:var(--rra-amber-bg);color:var(--rra-amber);border-color:var(--rra-amber)}
@@ -171,7 +175,7 @@ button{cursor:pointer;-webkit-appearance:none}
 .pcard .nextrow .nextlabel{color:var(--rra-muted);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em;font-family:var(--font-mono);flex-shrink:0}
 .warnflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-amber-bg);border:1px solid var(--rra-amber);border-radius:var(--r);color:var(--rra-amber);font-size:11.5px;line-height:1.4}
 .warnflag b{color:var(--rra-amber)}
-.readyflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-green-bg);border:1px solid var(--rra-green);border-radius:var(--r);color:var(--rra-green);font-size:11.5px;line-height:1.4}
+.readyflag{display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 10px;background:var(--rra-green-bg);border:1px solid var(--rra-green);border-radius:var(--r);color:var(--rra-green-text);font-size:11.5px;line-height:1.4}
 .verifyitem{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--rra-border)}
 .verifyitem:first-child{border-top:0}
 .verifyitem input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin-top:2px;accent-color:var(--rra-brass)}
@@ -241,14 +245,14 @@ button{cursor:pointer;-webkit-appearance:none}
 <div class="shell" id="app">
 
   <div class="top">
-    <!-- Typographic placeholder lockup (Concept A — Bracket Gap), not final brand art.
-         Swap-in point for approved SVGs: replace .mark's contents with
-         <img src="RRA_Logo_Primary_DarkBG.svg" alt="RRA" class="mark-img"> —
+    <!-- Typographic placeholder lockup, not final brand art.
+         Swap-in point for the approved Seal: add
+         <img src="NETBUILD_Seal.svg" alt="" class="mark-img"> before .nb —
          no other header markup needs to change. -->
     <div class="lockup">
-      <div class="mark"><span class="rra">RR<span class="gap" aria-hidden="true"></span>A</span></div>
-      <span class="full">Revenue Recovery Agency</span>
-      <span class="product">Diagnostic Terminal</span>
+      <div class="mark"><span class="nb">NETBUILD</span><span class="pro">.PRO</span></div>
+      <span class="full">Revenue Recovery Firm</span>
+      <span class="product">Sizzle &middot; Sales Tool</span>
       <div class="meta">
         <span>Residential HVAC</span>
         <span>Cohort 01</span>
@@ -286,7 +290,7 @@ button{cursor:pointer;-webkit-appearance:none}
       <div class="card">
         <div class="head">Launch Metrics</div>
         <div class="stats" id="homeStats"></div>
-        <p class="note">This tracks the first-five commercial validation cycle. It shows what happened — it does not decide whether RRA works.</p>
+        <p class="note">This tracks the first-five commercial validation cycle. It shows what happened — it does not decide whether NETBUILD.PRO works.</p>
       </div>
     </section>
 
@@ -379,7 +383,7 @@ button{cursor:pointer;-webkit-appearance:none}
       <div class="card">
         <div class="head">Launch Protocol</div>
         <div class="launchstep"><b>1. Select exactly five HVAC targets.</b><br><span class="note">Residential, owner-operated, 2-15 techs. No franchises, agencies, commercial-only shops, or firms with full-time marketing staff.</span></div>
-        <div class="launchstep"><b>2. Audit each target.</b><br><span class="note">Run the RRA audit, then manually verify the top revenue leak.</span></div>
+        <div class="launchstep"><b>2. Audit each target.</b><br><span class="note">Run the audit, then manually verify the top revenue leak.</span></div>
         <div class="launchstep"><b>3. Do the 20-minute truth pass.</b><br><span class="note">Reviews, mobile call/booking path, after-hours handling, service promise. Upgrade assumptions to <span class="known">KNOWN</span> wherever possible.</span></div>
         <div class="launchstep"><b>4. Build the $997 Good proposal.</b><br><span class="note">Lead with one evidence-backed number tied to the top validated leak. Never send the internal view.</span></div>
         <div class="launchstep"><b>5. Send and follow up.</b><br><span class="note">Day 0 first touch, Day 4 follow-up, Day 11 final launch follow-up. Every sent prospect gets a next-action date.</span></div>
@@ -392,8 +396,8 @@ button{cursor:pointer;-webkit-appearance:none}
       <div class="card">
         <div class="head">Data Management</div>
         <div class="row">
-          <button class="btn outline" id="btnExportJson">Export RRA data</button>
-          <button class="btn outline" id="btnImportJson">Import RRA data</button>
+          <button class="btn outline" id="btnExportJson">Export data</button>
+          <button class="btn outline" id="btnImportJson">Import data</button>
           <input type="file" id="importFile" accept="application/json" class="hidden">
         </div>
         <button class="btn danger block" id="btnResetTool">Reset tool</button>
@@ -534,7 +538,7 @@ button{cursor:pointer;-webkit-appearance:none}
             <div class="note" id="calcSub"></div>
           </div>
           <p class="note">This is a modeled opportunity, not a promise of recovered revenue. Replace estimates with owner-provided or directly observed numbers before sending a proposal.</p>
-          <div class="field"><label>Associated RRA HVAC leak</label><select id="cLeakId"></select></div>
+          <div class="field"><label>Associated HVAC leak</label><select id="cLeakId"></select></div>
           <div class="field"><label>Observed issue</label><input id="cIssue" placeholder="After-hours calls ring to voicemail"></div>
           <div class="field"><label>Evidence / source</label><input id="cSource" placeholder="Called Tuesday 6:45pm; no live response"></div>
           <button class="btn accentbtn block" id="btnAddEvidence">Add as evidence</button>
@@ -1122,11 +1126,11 @@ function renderHome(){
   ];
   document.getElementById("homeStats").innerHTML=stats.map(function(s){
     var isWon=s[0]==="Won";
-    return '<div class="stat"><strong'+(isWon&&s[1]?' style="color:var(--rra-green)"':"")+'>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
-  }).join("")+'<div class="stat" style="grid-column:span 4"><strong style="color:var(--rra-green)">'+fmtMoney(collected)+'</strong><span>Collected Revenue</span></div>';
+    return '<div class="stat"><strong'+(isWon&&s[1]?' style="color:var(--rra-green-text)"':"")+'>'+esc(s[1])+"</strong><span>"+esc(s[0])+"</span></div>";
+  }).join("")+'<div class="stat" style="grid-column:span 4"><strong style="color:var(--rra-green-text)">'+fmtMoney(collected)+'</strong><span>Collected Revenue</span></div>';
 
   var banner=document.getElementById("corruptBanner");
-  banner.innerHTML=corrupted?'<div class="banner">Local data on this device was corrupted and has been reset (a backup copy was used if one existed). If you have an exported JSON backup, use Launch &rarr; Import RRA data to restore it.</div>':"";
+  banner.innerHTML=corrupted?'<div class="banner">Local data on this device was corrupted and has been reset (a backup copy was used if one existed). If you have an exported JSON backup, use Launch &rarr; Import data to restore it.</div>':"";
 }
 
 /* ============ PROSPECTS ============ */
@@ -1572,7 +1576,7 @@ function buildPitch(p,type){
     var top0=topEvidence(p);
     var leak0=top0&&leakById(top0.leakId);
     var hint=leak0?(" Early signs point toward "+leak0.name.toLowerCase()+", but I want to confirm before I say more."):"";
-    return "Subject: Free revenue-leak scan for "+biz+"\n\n"+owner+",\n\nI run Revenue Recovery Agency. I do a free scan of how HVAC businesses like "+biz+" handle missed calls, after-hours requests, and online booking — no dollar estimate, no pitch, just a plain-English readout of what I actually find."+hint+"\n\nWant me to run it and send you what I see?\n\n[YOUR NAME]";
+    return "Subject: Free revenue-leak scan for "+biz+"\n\n"+owner+",\n\nI run NETBUILD.PRO. I do a free scan of how HVAC businesses like "+biz+" handle missed calls, after-hours requests, and online booking — no dollar estimate, no pitch, just a plain-English readout of what I actually find."+hint+"\n\nWant me to run it and send you what I see?\n\n[YOUR NAME]";
   }
   var top=topEvidence(p);
   if(!top)return null;
@@ -1582,7 +1586,7 @@ function buildPitch(p,type){
   var hedge=top.quality==="KNOWN"?"":"roughly ";
   var pitches={
     email:"Subject: "+biz+" — one revenue leak I found\n\n"+owner+",\n\nI found one issue worth showing you: "+leak+".\n\nEvidence: "+ev+".\n\nUsing the assumptions in my breakdown, the opportunity is "+hedge+impact+". If you give me your actual numbers, I'll replace the estimates and recalculate it.\n\nMy first recommendation isn't a marketing package — it's one fix for the biggest leak I can validate. The fixed-fee option is $997.\n\nWorth 10 minutes to walk through the evidence?\n\n[YOUR NAME]",
-    call:owner+", I run Revenue Recovery Agency. I looked at "+biz+" and found one leak worth verifying with you: "+leak+". The evidence I have is "+ev+". I'm not calling to sell marketing — I size revenue leaks and fix the biggest one first. My estimate is "+hedge+impact+", but I'd rather use your real numbers. Got two minutes for how you handle this today?",
+    call:owner+", I run NETBUILD.PRO. I looked at "+biz+" and found one leak worth verifying with you: "+leak+". The evidence I have is "+ev+". I'm not calling to sell marketing — I size revenue leaks and fix the biggest one first. My estimate is "+hedge+impact+", but I'd rather use your real numbers. Got two minutes for how you handle this today?",
     d4:"Subject: Re: "+biz+" revenue leak\n\n"+owner+", following up on the "+leak+" I found at "+biz+". The important part is the evidence: "+ev+". If my assumptions are wrong, send me the real numbers and I'll recalculate it. If the leak is real, the fix is a fixed $997. Worth a quick look?",
     d11:"Subject: Closing the loop on "+biz+"\n\n"+owner+", last follow-up from me on this. I flagged "+leak+" because "+ev+". If it's already handled, I'll close this out. If not, I can show you the evidence and the single-fix $997 option in 10 minutes."
   };
@@ -1941,7 +1945,7 @@ document.getElementById("importFile").addEventListener("change",function(e){
   var reader=new FileReader();
   reader.onload=function(){
     var parsed=safeParse(reader.result);
-    if(!parsed){toast("That file doesn't look like a valid RRA export");return;}
+    if(!parsed){toast("That file doesn't look like a valid data export");return;}
     if(!confirm("Import will overwrite all current data on this device. Continue?"))return;
     STATE=parsed;corrupted=false;saveState();renderAll();toast("Data imported");
   };
