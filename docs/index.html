@@ -442,8 +442,13 @@ button{cursor:pointer;-webkit-appearance:none}
           <div class="field"><label>Source</label><input id="pfSource" placeholder="Google Maps, referral..."></div>
         </div>
         <div class="card">
+          <div class="head">Research<small id="researchStatus"></small></div>
+          <p class="note">Confirm identity and contact channels before anything gets sent.</p>
+          <div id="researchList"></div>
+        </div>
+        <div class="card">
           <div class="head">Verify<small id="verifyStatus"></small></div>
-          <p class="note">Confirm these before a dollar figure goes to the client. Each check can carry a short source note.</p>
+          <p class="note">The manual pass: reviews and an after-hours call result. Confirm these before a dollar figure goes to the client. Each check can carry a short source note.</p>
           <div id="verifyList"></div>
         </div>
         <div class="field"><label>Why this target</label><textarea id="pfWhy" rows="2"></textarea></div>
@@ -462,6 +467,31 @@ button{cursor:pointer;-webkit-appearance:none}
         </div>
         <div class="field hidden" id="pfSentDateWrap"><label>First-touch (Day 0) date</label><input id="pfSentDate" type="date"></div>
         <div class="row" id="followupActions"></div>
+        <div class="card" id="callLogCard">
+          <div class="head">Log Call</div>
+          <p class="note">Right after a call: log the outcome, the objection if any, and what's next — in one save.</p>
+          <div class="field"><label>Outcome</label>
+            <select id="clOutcome">
+              <option value="connected">Connected</option>
+              <option value="voicemail">Voicemail</option>
+              <option value="no_answer">No answer</option>
+              <option value="interested">Interested</option>
+              <option value="not_now">Not now</option>
+              <option value="declined">Declined</option>
+              <option value="wrong_contact">Wrong contact</option>
+            </select>
+          </div>
+          <div class="field"><label>Contact reached</label><input id="clContact" placeholder="Name of who you spoke with"></div>
+          <div class="field"><label>One-line note</label><input id="clNote" placeholder="What happened on the call"></div>
+          <div class="field"><label>Objection (if any)</label>
+            <select id="clObjection"><option value="">No objection</option></select>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Next action</label><input id="clNextAction" placeholder="e.g. Call back Thursday"></div>
+            <div class="field"><label>Next date</label><input id="clNextDate" type="date"></div>
+          </div>
+          <button class="btn accentbtn block" id="btnLogCall">Save call log</button>
+        </div>
         <button class="btn primary block" id="btnSaveProspect">Save prospect</button>
         <button class="btn danger block" id="btnDeleteProspect">Delete / reset this slot</button>
       </div>
@@ -669,6 +699,7 @@ var OBJECTIONS=[
   ["Can you guarantee revenue?","No — and anyone who does is guessing. What I can guarantee is a documented leak, a conservative estimate labeled by how sure we are, and a fixed price to fix the single biggest one."],
   ["Not now.","Understood. I'll mark this for a 30-day re-engage rather than keep chasing you. If something changes sooner, you have my number."]
 ];
+document.getElementById("clObjection").innerHTML='<option value="">No objection</option>'+OBJECTIONS.map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[0])+"</option>";}).join("");
 
 var DISCOVERY_QUESTIONS=[
   "Roughly how many inbound calls do you receive in a normal month?",
@@ -833,25 +864,55 @@ function topEvidence(p){
 }
 
 /* ---------- verify checklist: confirm before a dollar claim goes to the client ---------- */
-var VERIFY_ITEMS=[
+var RESEARCH_ITEMS=[
   {id:"business",label:"Correct business identity confirmed (name, address, owner match)"},
   {id:"phone",label:"Phone number confirmed (correct, working line)"},
-  {id:"website",label:"Website confirmed (loads, matches business)"},
+  {id:"website",label:"Website confirmed (loads, matches business)"}
+];
+var VERIFY_ITEMS=[
   {id:"reviews",label:"Reviews checked (Google/Yelp — claims vs. complaints)"},
   {id:"afterHours",label:"After-hours call result recorded (test call made and logged)"}
 ];
-function verifyProgress(p){
+function checklistProgress(items,p){
   var v=(p&&p.verify)||{};
-  var done=VERIFY_ITEMS.filter(function(it){return v[it.id]&&v[it.id].done;}).length;
-  return {done:done,total:VERIFY_ITEMS.length,allDone:done===VERIFY_ITEMS.length};
+  var done=items.filter(function(it){return v[it.id]&&v[it.id].done;}).length;
+  return {done:done,total:items.length,allDone:done===items.length};
 }
-function nextVerifyItem(p){
+function nextChecklistItem(items,p){
   var v=(p&&p.verify)||{};
-  for(var i=0;i<VERIFY_ITEMS.length;i++){if(!(v[VERIFY_ITEMS[i].id]&&v[VERIFY_ITEMS[i].id].done))return VERIFY_ITEMS[i];}
+  for(var i=0;i<items.length;i++){if(!(v[items[i].id]&&v[items[i].id].done))return items[i];}
   return null;
 }
+function researchProgress(p){return checklistProgress(RESEARCH_ITEMS,p);}
+function nextResearchItem(p){return nextChecklistItem(RESEARCH_ITEMS,p);}
+function verifyProgress(p){return checklistProgress(VERIFY_ITEMS,p);}
+function nextVerifyItem(p){return nextChecklistItem(VERIFY_ITEMS,p);}
 function readyToShare(p){
-  return verifyProgress(p).allDone&&(p.evidence||[]).length>0;
+  return researchProgress(p).allDone&&verifyProgress(p).allDone&&(p.evidence||[]).length>0;
+}
+/* ---------- explicit readiness gates (spec: RESEARCH/VERIFY/DIAGNOSE/SHARE/...) ---------- */
+function freeScanReady(p){
+  return researchProgress(p).allDone&&(p.evidence||[]).length>0;
+}
+function diagnosticAuditReady(p){
+  var top=topEvidence(p);
+  return !!top&&top.quality==="KNOWN";
+}
+function offerReady(p){
+  var top=topEvidence(p);
+  return !!top&&top.quality==="KNOWN";
+}
+function prospectStage(p){
+  if(p.outcome==="WON")return handoffProgress(p).allDone?"MEASURE":"ONBOARD";
+  if(p.outcome==="LOST")return "LOST";
+  if(p.outcome==="NURTURE")return "FOLLOW UP";
+  var fu=followupInfo(p);
+  if(fu||p.state==="CONVERSATION"||p.state==="SENT")return "FOLLOW UP";
+  if(p.state==="PROPOSAL_READY")return "SHARE";
+  if(!researchProgress(p).allDone)return "RESEARCH";
+  if(!verifyProgress(p).allDone)return "VERIFY";
+  if(!offerReady(p))return "DIAGNOSE";
+  return "SHARE";
 }
 
 /* ---------- handoff checklist: what a WON prospect needs before work starts ---------- */
@@ -890,70 +951,74 @@ function followupInfo(p){
 function prospectAction(p){
   if(p.outcome==="WON"){
     var hNext=nextHandoffItem(p);
-    if(hNext)return {text:"Handoff: "+hNext.label+" — "+p.company,urgency:1,kind:"handoff"};
+    if(hNext)return {text:"ONBOARD: "+hNext.label+" — "+p.company,urgency:1,kind:"handoff"};
     return null;
   }
   if(p.outcome==="LOST")return null;
   if(p.outcome==="NURTURE"){
     if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
-      return {text:"Re-engage "+p.company+" (NURTURE 30-day mark passed)",urgency:2,kind:"reengage"};
+      return {text:"FOLLOW UP: Re-engage "+p.company+" (30-day mark passed)",urgency:2,kind:"reengage"};
     }
     return null;
   }
   var fu=followupInfo(p);
-  if(fu&&fu.status==="overdue")return {text:fu.label+" OVERDUE — "+p.company,urgency:0,kind:"followup"};
-  if(fu&&fu.status==="today")return {text:fu.label+" due today — "+p.company,urgency:1,kind:"followup"};
-  if(p.state==="CONVERSATION")return {text:"Continue conversation — push next step with "+p.company,urgency:2,kind:"conversation"};
-  if(p.state==="PROPOSAL_READY")return {text:"Send initial outreach to "+p.company,urgency:3,kind:"send"};
+  if(fu&&fu.status==="overdue")return {text:"FOLLOW UP: "+fu.label+" OVERDUE — "+p.company,urgency:0,kind:"followup"};
+  if(fu&&fu.status==="today")return {text:"FOLLOW UP: "+fu.label+" due today — "+p.company,urgency:1,kind:"followup"};
+  if(p.state==="CONVERSATION")return {text:"FOLLOW UP: Continue conversation — push next step with "+p.company,urgency:2,kind:"conversation"};
+  if(p.state==="PROPOSAL_READY")return {text:"SHARE: Send initial outreach to "+p.company,urgency:3,kind:"send"};
   if(p.state==="VERIFIED"){
-    if((p.evidence||[]).length)return {text:"Build the $997 proposal for "+p.company,urgency:4,kind:"offer"};
-    return {text:"Add evidence for "+p.company,urgency:4,kind:"evidence"};
+    if((p.evidence||[]).length)return {text:"SHARE: Build the $997 proposal for "+p.company,urgency:4,kind:"offer"};
+    return {text:"DIAGNOSE: Add evidence for "+p.company,urgency:4,kind:"evidence"};
   }
   if(p.state==="AUDITED"){
     var vNext=nextVerifyItem(p);
-    if(vNext)return {text:"Verify: "+vNext.label+" — "+p.company,urgency:5,kind:"verify"};
-    return {text:"Mark "+p.company+" VERIFIED — checklist complete",urgency:5,kind:"verify"};
+    if(vNext)return {text:"VERIFY: "+vNext.label+" — "+p.company,urgency:5,kind:"verify"};
+    return {text:"DIAGNOSE: Mark "+p.company+" VERIFIED — checklist complete",urgency:5,kind:"verify"};
   }
   if(p.state==="TARGET"){
-    if(!(p.evidence||[]).length)return {text:"Scan "+p.company,urgency:6,kind:"scan"};
-    return {text:"Mark "+p.company+" AUDITED once scanned",urgency:6,kind:"audit"};
+    var rNext=nextResearchItem(p);
+    if(rNext)return {text:"RESEARCH: "+rNext.label+" — "+p.company,urgency:6,kind:"research"};
+    if(!(p.evidence||[]).length)return {text:"DIAGNOSE: Scan "+p.company,urgency:6,kind:"scan"};
+    return {text:"VERIFY: Mark "+p.company+" AUDITED once scanned",urgency:6,kind:"audit"};
   }
-  if(fu&&fu.status==="upcoming")return {text:p.company+" — "+fu.label+" upcoming ("+fmtDate(fu.due)+")",urgency:8,kind:"upcoming"};
+  if(fu&&fu.status==="upcoming")return {text:"FOLLOW UP: "+p.company+" — "+fu.label+" upcoming ("+fmtDate(fu.due)+")",urgency:8,kind:"upcoming"};
   return null;
 }
 
 function prospectActionCard(p){
   if(p.outcome==="WON"){
     var hNextC=nextHandoffItem(p);
-    if(hNextC)return {text:"Handoff: "+hNextC.label,due:null,status:""};
+    if(hNextC)return {text:"ONBOARD: "+hNextC.label,due:null,status:""};
     return null;
   }
   if(p.outcome==="LOST")return null;
   if(p.outcome==="NURTURE"){
     if(p.nurtureReengageDate&&new Date(p.nurtureReengageDate)<=new Date()){
-      return {text:"Re-engage (30-day mark passed)",due:null,status:"today"};
+      return {text:"FOLLOW UP: Re-engage (30-day mark passed)",due:null,status:"today"};
     }
     return null;
   }
   var fu=followupInfo(p);
-  if(fu&&fu.status==="overdue")return {text:fu.label+" OVERDUE",due:fu.due,status:"overdue"};
-  if(fu&&fu.status==="today")return {text:fu.label+" due today",due:fu.due,status:"today"};
-  if(p.state==="CONVERSATION")return {text:"Continue conversation — push next step",due:null,status:""};
-  if(p.state==="PROPOSAL_READY")return {text:"Send initial outreach",due:null,status:""};
+  if(fu&&fu.status==="overdue")return {text:"FOLLOW UP: "+fu.label+" OVERDUE",due:fu.due,status:"overdue"};
+  if(fu&&fu.status==="today")return {text:"FOLLOW UP: "+fu.label+" due today",due:fu.due,status:"today"};
+  if(p.state==="CONVERSATION")return {text:"FOLLOW UP: Continue conversation — push next step",due:null,status:""};
+  if(p.state==="PROPOSAL_READY")return {text:"SHARE: Send initial outreach",due:null,status:""};
   if(p.state==="VERIFIED"){
-    if((p.evidence||[]).length)return {text:"Build the $997 proposal",due:null,status:""};
-    return {text:"Add evidence",due:null,status:""};
+    if((p.evidence||[]).length)return {text:"SHARE: Build the $997 proposal",due:null,status:""};
+    return {text:"DIAGNOSE: Add evidence",due:null,status:""};
   }
   if(p.state==="AUDITED"){
     var vNextC=nextVerifyItem(p);
-    if(vNextC)return {text:"Verify: "+vNextC.label,due:null,status:""};
-    return {text:"Mark VERIFIED — checklist complete",due:null,status:""};
+    if(vNextC)return {text:"VERIFY: "+vNextC.label,due:null,status:""};
+    return {text:"DIAGNOSE: Mark VERIFIED — checklist complete",due:null,status:""};
   }
   if(p.state==="TARGET"){
-    if(!(p.evidence||[]).length)return {text:"Scan website",due:null,status:""};
-    return {text:"Mark AUDITED once scanned",due:null,status:""};
+    var rNextC=nextResearchItem(p);
+    if(rNextC)return {text:"RESEARCH: "+rNextC.label,due:null,status:""};
+    if(!(p.evidence||[]).length)return {text:"DIAGNOSE: Scan website",due:null,status:""};
+    return {text:"VERIFY: Mark AUDITED once scanned",due:null,status:""};
   }
-  if(fu&&fu.status==="upcoming")return {text:fu.label+" upcoming",due:fu.due,status:"upcoming"};
+  if(fu&&fu.status==="upcoming")return {text:"FOLLOW UP: "+fu.label+" upcoming",due:fu.due,status:"upcoming"};
   return null;
 }
 
@@ -1190,6 +1255,13 @@ function openProspectSheet(id){
   document.getElementById("pfSentDate").value=p&&p.sentDate?p.sentDate:todayISO();
   toggleSentDateField();
   renderFollowupActions(p);
+  document.getElementById("callLogCard").classList.toggle("hidden",!p);
+  document.getElementById("clOutcome").value="connected";
+  document.getElementById("clContact").value=p?p.contact||"":"";
+  document.getElementById("clNote").value="";
+  document.getElementById("clObjection").value="";
+  document.getElementById("clNextAction").value="";
+  document.getElementById("clNextDate").value="";
   document.getElementById("btnDeleteProspect").classList.toggle("hidden",!p);
   var leakSel=document.getElementById("cLeakId");
   leakSel.innerHTML=LEAK_LIBRARY.map(function(l){return '<option value="'+l.id+'">'+esc(l.name)+"</option>";}).join("");
@@ -1206,6 +1278,39 @@ function openProspectSheet(id){
   if(p)renderProspectNotes(p);
   document.getElementById("prospectOverlay").classList.remove("hidden");
 }
+document.getElementById("btnLogCall").addEventListener("click",function(){
+  var p=prospectById(currentProspectId);if(!p)return;
+  var outcome=document.getElementById("clOutcome").value;
+  var contact=document.getElementById("clContact").value.trim();
+  var note=document.getElementById("clNote").value.trim();
+  var objection=document.getElementById("clObjection").value;
+  var nextAction=document.getElementById("clNextAction").value.trim();
+  var nextDate=document.getElementById("clNextDate").value;
+  var outcomeLabels={connected:"Connected",voicemail:"Voicemail",no_answer:"No answer",interested:"Interested",not_now:"Not now",declined:"Declined",wrong_contact:"Wrong contact"};
+  var activityType={connected:"call",voicemail:"voicemail",no_answer:"call",interested:"conversation",not_now:"call",declined:"lost",wrong_contact:"call"}[outcome]||"call";
+  var lines=["Call log — "+outcomeLabels[outcome]];
+  if(contact)lines.push("Contact: "+contact);
+  if(note)lines.push(note);
+  if(objection)lines.push("Objection: \""+objection+"\"");
+  if(nextAction||nextDate)lines.push("Next: "+(nextAction||"follow up")+(nextDate?" ("+fmtDate(new Date(nextDate))+")":""));
+  var summary=lines.join(" — ");
+  p.notes=p.notes||[];
+  p.notes.unshift({id:uid(),text:summary,ts:nowISO()});
+  p.lastContact=nowISO();
+  if(outcome==="interested"){p.state="CONVERSATION";p.outcome=null;}
+  else if(outcome==="not_now"){p.outcome="NURTURE";p.nurtureReengageDate=addDays(todayISO(),30).toISOString();}
+  else if(outcome==="declined"){p.state="LOST";p.outcome="LOST";}
+  logActivity(p.id,activityType,summary);
+  saveState();
+  document.getElementById("clContact").value="";
+  document.getElementById("clNote").value="";
+  document.getElementById("clObjection").value="";
+  document.getElementById("clNextAction").value="";
+  document.getElementById("clNextDate").value="";
+  renderAll();
+  openProspectSheet(p.id);
+  toast("Call logged");
+});
 function closeProspectSheet(){document.getElementById("prospectOverlay").classList.add("hidden");currentProspectId=null;}
 document.getElementById("btnCloseSheet").addEventListener("click",closeProspectSheet);
 document.getElementById("btnParseDossier").addEventListener("click",function(){
@@ -1375,18 +1480,18 @@ document.getElementById("btnAddEvidence").addEventListener("click",function(){
   renderEvidence(p);renderOutreachPanel(p);renderOfferPanel(p);renderPacket(p);renderSlots();
   toast("Evidence added");
 });
-function renderVerifyChecklist(p){
-  var status=document.getElementById("verifyStatus");
-  var list=document.getElementById("verifyList");
+function renderChecklist(items,p,listId,statusId,extraStatus){
+  var status=document.getElementById(statusId);
+  var list=document.getElementById(listId);
   if(!p){
     status.textContent="";
-    list.innerHTML='<p class="note">Save the prospect first, then verify.</p>';
+    list.innerHTML='<p class="note">Save the prospect first, then confirm this.</p>';
     return;
   }
   p.verify=p.verify||{};
-  var prog=verifyProgress(p);
-  status.textContent=prog.done+"/"+prog.total+" confirmed"+(readyToShare(p)?" — ready to share":"");
-  list.innerHTML=VERIFY_ITEMS.map(function(it){
+  var prog=checklistProgress(items,p);
+  status.textContent=prog.done+"/"+prog.total+" confirmed"+(extraStatus?extraStatus(p):"");
+  list.innerHTML=items.map(function(it){
     var rec=p.verify[it.id]||{};
     return '<div class="verifyitem'+(rec.done?" done":"")+'" data-vitem="'+it.id+'">'+
       '<input type="checkbox" data-vcheck="'+it.id+'"'+(rec.done?" checked":"")+'>'+
@@ -1411,6 +1516,10 @@ function renderVerifyChecklist(p){
       saveState();
     });
   });
+}
+function renderVerifyChecklist(p){
+  renderChecklist(RESEARCH_ITEMS,p,"researchList","researchStatus");
+  renderChecklist(VERIFY_ITEMS,p,"verifyList","verifyStatus",function(pp){return readyToShare(pp)?" — ready to share":"";});
 }
 
 function renderEvidence(p){
@@ -1486,9 +1595,9 @@ function renderOutreachPanel(p){
   var warn=document.getElementById("pitchWarn");
   var msgs=[];
   if(pitchType!=="scan"){
-    var prog=verifyProgress(p);
-    if(!prog.allDone){
-      msgs.push('<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+prog.done+'/'+prog.total+').</b> This script names a dollar figure before the basics are confirmed — consider the Free scan invite instead, or finish verifying first.</span></div>');
+    var rProg=researchProgress(p),vProg=verifyProgress(p);
+    if(!(rProg.allDone&&vProg.allDone)){
+      msgs.push('<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+(rProg.done+vProg.done)+'/'+(rProg.total+vProg.total)+').</b> This script names a dollar figure before the basics are confirmed — consider the Free scan invite instead, or finish verifying first.</span></div>');
     }
     if(top&&top.quality!=="KNOWN"){
       msgs.push('<div class="warnflag"><span>&#9888;</span><span><b>Dollar figure is '+esc(top.quality)+', not owner-confirmed.</b> This script hedges the number as an estimate — get real numbers before you promise a total.</span></div>');
@@ -1514,10 +1623,10 @@ function renderOfferPanel(p){
   var action=leak?leak.action:"Implement the fix for the validated leak";
   var qualityNote=top.quality==="KNOWN"?"This figure is based on owner-confirmed numbers.":(top.quality==="BENCHMARK"?"This figure is a conservative industry-benchmark approximation.":"This figure is a conservative estimate pending owner-confirmed numbers.");
   var offerWarn=top.quality!=="KNOWN"?('<div class="warnflag"><span>&#9888;</span><span><b>Unverified input.</b> '+esc(qualityNote)+' Confirm the underlying number with the owner before quoting this figure as fact.</span></div>'):"";
-  var readyProg=verifyProgress(p);
-  var readyBanner=readyProg.allDone?
+  var rReadyProg=researchProgress(p),vReadyProg=verifyProgress(p);
+  var readyBanner=(rReadyProg.allDone&&vReadyProg.allDone)?
     '<div class="readyflag"><span>&#10003;</span><span><b>Ready to share.</b> Verification checklist complete.</span></div>':
-    '<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+readyProg.done+'/'+readyProg.total+').</b> Finish it on the Overview tab before sending this as a confident client claim.</span></div>';
+    '<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+(rReadyProg.done+vReadyProg.done)+'/'+(rReadyProg.total+vReadyProg.total)+').</b> Finish it on the Overview tab before sending this as a confident client claim.</span></div>';
   out.innerHTML=
     readyBanner+
     '<div class="card"><div class="head">Deploy $997 Implementation</div>'+
@@ -1562,9 +1671,9 @@ function buildPacketText(p){
     lines.push("   Estimated impact: "+fmtMoney(e.impact)+"/mo ("+fmtMoney(e.impact*12)+"/yr)");
     lines.push("");
   });
-  var prog=verifyProgress(p);
-  if(!prog.allDone){
-    lines.push("Note: verification in progress ("+prog.done+"/"+prog.total+") — figures above are subject to confirmation.");
+  var rProg=researchProgress(p),vProg=verifyProgress(p);
+  if(!(rProg.allDone&&vProg.allDone)){
+    lines.push("Note: verification in progress ("+(rProg.done+vProg.done)+"/"+(rProg.total+vProg.total)+") — figures above are subject to confirmation.");
     lines.push("");
   }
   lines.push("Next step: a fixed-fee $997 implementation of the top validated leak, or a free walkthrough of these findings.");
@@ -1575,10 +1684,11 @@ function renderPacket(p){
   var statusEl=document.getElementById("packetSentStatus");
   if(!p){prev.innerHTML="";statusEl.textContent="";return;}
   var ev=packetEvidence(p);
-  var prog=verifyProgress(p);
-  var banner=prog.allDone?
+  var rProg=researchProgress(p),vProg=verifyProgress(p);
+  var doneCount=rProg.done+vProg.done,totalCount=rProg.total+vProg.total;
+  var banner=(rProg.allDone&&vProg.allDone)?
     '<div class="readyflag"><span>&#10003;</span><span><b>Ready to share.</b> Verification checklist complete.</span></div>':
-    (ev.length?'<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+prog.done+'/'+prog.total+').</b> The figures below are still subject to confirmation — that note is included in the copied/printed packet.</span></div>':"");
+    (ev.length?'<div class="warnflag"><span>&#9888;</span><span><b>Verification checklist incomplete ('+doneCount+'/'+totalCount+').</b> The figures below are still subject to confirmation — that note is included in the copied/printed packet.</span></div>':"");
   var body;
   if(!ev.length){
     body='<p class="note">No findings recorded yet. Add evidence on the Evidence tab first.</p>';
@@ -1673,8 +1783,14 @@ document.getElementById("hfBaseline").addEventListener("change",function(){
 function renderProspectNotes(p){
   var list=document.getElementById("pNoteList");
   list.innerHTML=(p.notes||[]).map(function(n){
-    return '<div class="card"><div class="note">'+esc(new Date(n.ts).toLocaleString())+"</div><div>"+esc(n.text)+"</div></div>";
+    return '<div class="card"><div class="note">'+esc(new Date(n.ts).toLocaleString())+"</div><div>"+esc(n.text)+'</div><div class="row" style="margin-top:8px"><button class="pill" data-rmnote="'+n.id+'">Delete</button></div></div>';
   }).join("")||'<p class="note">No notes yet.</p>';
+  Array.prototype.forEach.call(list.querySelectorAll("[data-rmnote]"),function(el){
+    el.addEventListener("click",function(){
+      p.notes=(p.notes||[]).filter(function(n){return n.id!==el.getAttribute("data-rmnote");});
+      saveState();renderProspectNotes(p);toast("Note deleted");
+    });
+  });
 }
 document.getElementById("btnSavePNote").addEventListener("click",function(){
   var p=prospectById(currentProspectId);if(!p)return;
